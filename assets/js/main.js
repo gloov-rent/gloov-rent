@@ -44,6 +44,11 @@
   const erro = document.getElementById('erro-datas');
   const campoModelo = document.getElementById('campo-modelo');
   const modeloEscolhido = document.getElementById('modelo-escolhido');
+  const modeloTexto = document.getElementById('modelo-texto');
+  const trocarModelo = document.getElementById('trocar-modelo');
+  const botaoEnviar = form.querySelector('.booking-submit');
+  const textoEnviar = botaoEnviar.querySelector('.booking-submit-texto');
+  const iconeEnviar = botaoEnviar.querySelector('use');
   const DIAS = { semanal: 7, mensal: 30 };
 
   const pad = (n) => String(n).padStart(2, '0');
@@ -90,18 +95,44 @@
     if (!devolucao.value || new Date(devolucao.value) <= new Date(retirada.value)) {
       return mostrarErro('A devolução precisa ser depois da retirada.', devolucao);
     }
-    // TODO: integrar com a busca de disponibilidade (API). Por enquanto, leva à lista de modelos.
-    document.getElementById('scooters').scrollIntoView({ behavior: 'smooth' });
+    if (!campoModelo.value) {
+      // Sem modelo escolhido: leva à lista de modelos.
+      // TODO: integrar com a busca de disponibilidade (API).
+      document.getElementById('scooters').scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
+    // Com modelo escolhido: guarda a reserva e segue para o login.
+    // TODO: enviar a reserva para a API quando o back-end existir.
+    const reserva = {
+      modelo: campoModelo.value,
+      ponto: form.ponto.value,
+      retirada: retirada.value,
+      devolucao: devolucao.value,
+      modalidade: modalidade.value,
+    };
+    try { sessionStorage.setItem('gloov-reserva', JSON.stringify(reserva)); } catch (_) { /* armazenamento indisponível */ }
+    window.location.href = 'login.html';
   });
 
   /* Botões "Reservar" dos cards preenchem o modelo e voltam ao formulário */
+  function definirModelo(modelo) {
+    campoModelo.value = modelo || '';
+    modeloTexto.textContent = modelo ? `Modelo escolhido: ${modelo}` : '';
+    modeloEscolhido.hidden = !modelo;
+    textoEnviar.textContent = modelo ? 'Continuar reserva' : 'Ver scooters disponíveis';
+    iconeEnviar.setAttribute('href', modelo ? '#i-check' : '#i-search');
+  }
+
   document.querySelectorAll('[data-modelo]').forEach((btn) => {
     btn.addEventListener('click', () => {
-      campoModelo.value = btn.dataset.modelo;
-      modeloEscolhido.textContent = `Modelo escolhido: ${btn.dataset.modelo}`;
-      modeloEscolhido.hidden = false;
+      definirModelo(btn.dataset.modelo);
       setTimeout(() => retirada.focus({ preventScroll: true }), 400);
     });
+  });
+
+  trocarModelo.addEventListener('click', () => {
+    definirModelo('');
+    document.getElementById('scooters').scrollIntoView({ behavior: 'smooth' });
   });
 
   /* ---------- Ano no rodapé ---------- */

@@ -85,7 +85,10 @@
 
       <form class="booking" id="reserva" action="#scooters" novalidate aria-label="Reservar uma scooter">
         <input type="hidden" name="modelo" id="campo-modelo">
-        <p class="booking-model" id="modelo-escolhido" hidden aria-live="polite"></p>
+        <div class="booking-model" id="modelo-escolhido" hidden>
+          <span id="modelo-texto" aria-live="polite"></span>
+          <button type="button" class="booking-model-trocar" id="trocar-modelo">Trocar modelo</button>
+        </div>
 
         <div class="field">
           <label for="ponto">Ponto de retirada</label>
@@ -121,7 +124,7 @@
         </div>
 
         <button class="btn btn--vermelho booking-submit" type="submit">
-          <svg aria-hidden="true"><use href="#i-search"/></svg>Ver scooters disponíveis
+          <svg aria-hidden="true"><use href="#i-search"/></svg><span class="booking-submit-texto">Ver scooters disponíveis</span>
         </button>
 
         <p class="booking-error" id="erro-datas" role="alert" hidden></p>
