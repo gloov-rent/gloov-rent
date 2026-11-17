@@ -19,13 +19,15 @@ As fontes e imagens são locais, então o site funciona offline. Só o mapa da s
 gloov-rent-site/
 ├─ index.html                 landing page com todas as seções
 ├─ login.html                 tela de login (Entrar)
+├─ cadastro.html              tela de cadastro (Cadastre-se)
 ├─ assets/
 │  ├─ css/
 │  │  ├─ fonts.css            @font-face das fontes locais
 │  │  └─ styles.css           estilos; cores e tipografia em variáveis (:root)
 │  ├─ js/
 │  │  ├─ main.js              menu do celular, formulário de reserva, link ativo do menu
-│  │  └─ login.js             validação do login (e-mail ou CPF), mostrar senha
+│  │  ├─ login.js             validação do login (e-mail ou CPF), mostrar senha
+│  │  └─ cadastro.js          validação do cadastro (CPF, idade, celular, senha), máscaras
 │  ├─ img/                    logo, favicon, foto do topo (768 e 1440 px) e fotos das scooters (WebP)
 │  └─ fonts/                  Barlow e Barlow Condensed (woff2, subconjunto latin)
 ├─ .vscode/                   configuração do Live Server (porta 5500) e extensão recomendada
@@ -59,7 +61,8 @@ As cores e estilos de texto seguem os estilos do protótipo no Figma (por exempl
 | Rodapé e FAQ | WhatsApp, e-mail, Instagram, Facebook e CNPJ reais |
 | Nossa Loja | Link do "Site da loja" |
 | Login | Ligar à API de autenticação e criar `recuperar-senha.html` |
-| Links | `cadastro.html`, `modelos.html`, `termos.html`, `privacidade.html` |
+| Cadastro | Ligar à API de cadastro |
+| Links | `modelos.html`, `termos.html`, `privacidade.html` |
 | Formulário | Ligar à busca de disponibilidade (hoje valida as datas e rola até os modelos) |
 
 ## Créditos
