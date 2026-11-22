@@ -1,0 +1,1434 @@
+<!doctype html>
+<html lang="pt-BR" class="h-full scroll-smooth">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gloov Rent — Reserva e Pagamento Online</title>
+  <meta name="description" content="Reserve e pague online a sua scooter elétrica Gloov. Retirada em São José do Rio Preto - SP.">
+  <meta name="theme-color" content="#171F0D">
+
+  <!-- Fontes do Google: Barlow Condensed & Barlow -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;1,900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gloov: {
+              dark: '#171F0D',
+              olive: '#232E14',
+              surface: '#2C3A19',
+              lime: '#B8F22C',
+              limeHover: '#A3D923',
+              red: '#E63946',
+              redHover: '#C92A37',
+              bgLight: '#F7F8F5',
+              textDark: '#171F0D',
+              muted: '#525C46',
+              borderDark: '#384724'
+            }
+          },
+          fontFamily: {
+            condensed: ['"Barlow Condensed"', 'sans-serif'],
+            sans: ['Barlow', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Barlow', sans-serif;
+      background-color: #171F0D;
+      color: #F7F8F5;
+    }
+    .font-condensed {
+      font-family: 'Barlow Condensed', sans-serif;
+    }
+    .glass-card {
+      background: rgba(35, 46, 20, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(184, 242, 44, 0.15);
+    }
+    .glass-card-light {
+      background: #FFFFFF;
+      color: #171F0D;
+      border: 1px solid #E2E8F0;
+    }
+    .credit-card-inner {
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+    .credit-card-inner.flipped {
+      transform: rotateY(180deg);
+    }
+    .credit-card-front, .credit-card-back {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .credit-card-back {
+      transform: rotateY(180deg);
+    }
+    @keyframes neonGlow {
+      0%, 100% { box-shadow: 0 0 15px rgba(184, 242, 44, 0.3); }
+      50% { box-shadow: 0 0 25px rgba(184, 242, 44, 0.6); }
+    }
+    .neon-pulse {
+      animation: neonGlow 2.5s infinite;
+    }
+    .scooter-radio:checked + label {
+      border-color: #B8F22C;
+      background-color: rgba(184, 242, 44, 0.08);
+      box-shadow: 0 0 0 2px #B8F22C;
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #modal-comprovante, #modal-comprovante * {
+        visibility: visible;
+      }
+      #modal-comprovante {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background: white !important;
+        color: black !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+<!-- SVG Sprite de Ícones -->
+<svg class="hidden" aria-hidden="true" focusable="false">
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></g></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></g></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12L13 2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.5 1.3 6.6L12 17.3l-5.9 3.2 1.3-6.6-4.9-4.5 6.6-.8z" fill="currentColor"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+  <symbol id="i-whatsapp" viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-7.8 13.5L3 21l4.6-1.2A9 9 0 1 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 8.5c0 3.6 2.9 6.5 6.5 6.5l1-1.6-2-1-1 1a4 4 0 0 1-2.4-2.4l1-1-1-2L9 8.5z" fill="currentColor"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-card" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><line x1="2" y1="10" x2="22" y2="10" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-pix" viewBox="0 0 24 24"><path d="M12 2L4 9.5l3.5 3.5L12 7.5l4.5 5.5L20 9.5 12 2zm-8 12.5L7.5 18 12 13.5l4.5 4.5 3.5-3.5-8 7.5-8-7.5z" fill="currentColor"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M22 6l-10 7L2 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<!-- CABEÇALHO SIMPLIFICADO DE CHECKOUT -->
+<header class="bg-gloov-dark/95 backdrop-blur-md border-b border-gloov-borderDark sticky top-0 z-40">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+    <!-- Logo Gloov Rent -->
+    <a href="index.html" class="flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-gloov-lime rounded-lg p-1">
+      <img src="assets/img/logo-gloov.png" width="130" height="48" alt="Gloov Rent" class="h-10 w-auto object-contain" onerror="this.onerror=null; this.outerHTML='<span class=\'font-condensed text-3xl font-black italic tracking-wider text-gloov-lime\'>GLOOV <span class=\'text-white font-normal\'>RENT</span></span>'">
+    </a>
+
+    <div class="flex items-center gap-4">
+      <!-- Badge de Usuário Logado -->
+      <div id="user-session-badge" class="hidden items-center gap-3 bg-gloov-olive/90 border border-gloov-lime/30 px-3 py-1.5 rounded-xl text-xs">
+        <span class="text-gray-300">Olá, <strong id="header-user-name" class="text-gloov-lime">Cliente</strong></span>
+        <button type="button" onclick="logoutUsuario()" class="text-gray-400 hover:text-gloov-red underline font-semibold">Sair</button>
+      </div>
+
+      <!-- Suporte WhatsApp -->
+      <a href="https://wa.me/5517999999999?text=Olá!%20Preciso%20de%20ajuda%20com%20minha%20reserva%20na%20Gloov%20Rent." target="_blank" rel="noopener" class="flex items-center gap-2 text-sm font-semibold text-gray-200 hover:text-gloov-lime transition-colors">
+        <span class="w-8 h-8 rounded-full bg-emerald-600/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30">
+          <svg class="w-4 h-4" aria-hidden="true"><use href="#i-whatsapp"/></svg>
+        </span>
+        <span class="hidden sm:inline">Dúvidas? <strong class="text-white">Fale Conosco</strong></span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- CONTEÚDO PRINCIPAL -->
+<main id="conteudo" class="flex-1 py-8 md:py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+
+  <!-- BARRA DE PROGRESSO DAS ETAPAS -->
+  <div class="mb-10 max-w-3xl mx-auto">
+    <div class="flex items-center justify-between relative">
+      <div class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-gloov-olive w-full -z-0 rounded-full"></div>
+      <div id="progress-line" class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-gloov-lime transition-all duration-500 w-0 -z-0 rounded-full"></div>
+
+      <!-- Etapa 1 -->
+      <div class="step-indicator relative z-10 flex flex-col items-center" data-step="1">
+        <button type="button" onclick="goToStep(1)" class="w-10 h-10 rounded-full bg-gloov-lime text-gloov-dark font-condensed font-bold text-lg flex items-center justify-center ring-4 ring-gloov-dark transition-transform hover:scale-110">
+          1
+        </button>
+        <span class="text-xs font-semibold mt-2 text-gloov-lime uppercase tracking-wider">Scooter & Datas</span>
+      </div>
+
+      <!-- Etapa 2 -->
+      <div class="step-indicator relative z-10 flex flex-col items-center" data-step="2">
+        <button type="button" onclick="goToStep(2)" class="w-10 h-10 rounded-full bg-gloov-olive text-gray-400 font-condensed font-bold text-lg flex items-center justify-center ring-4 ring-gloov-dark border border-gloov-borderDark transition-transform hover:scale-110">
+          2
+        </button>
+        <span class="text-xs font-semibold mt-2 text-gray-400 uppercase tracking-wider">Seus Dados</span>
+      </div>
+
+      <!-- Etapa 3 -->
+      <div class="step-indicator relative z-10 flex flex-col items-center" data-step="3">
+        <button type="button" onclick="goToStep(3)" class="w-10 h-10 rounded-full bg-gloov-olive text-gray-400 font-condensed font-bold text-lg flex items-center justify-center ring-4 ring-gloov-dark border border-gloov-borderDark transition-transform hover:scale-110">
+          3
+        </button>
+        <span class="text-xs font-semibold mt-2 text-gray-400 uppercase tracking-wider">Pagamento</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRID COM FORMULÁRIO (ESQUERDA) E RESUMO FIXO (DIREITA) -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    
+    <!-- COLUNA PRINCIPAL DAS ETAPAS -->
+    <div class="lg:col-span-7 space-y-8">
+      
+      <form id="form-checkout" onsubmit="handleCheckoutSubmit(event)" novalidate>
+        
+        <!-- ==========================================
+             ETAPA 1: ESCOLHA DA SCOOTER, DATAS E ADICIONAIS
+             ========================================== -->
+        <section id="step-1" class="step-content glass-card rounded-2xl p-6 sm:p-8 space-y-6">
+          <div class="border-b border-gloov-borderDark pb-4 flex items-center justify-between">
+            <div>
+              <p class="text-xs font-bold uppercase tracking-widest text-gloov-lime mb-1 flex items-center gap-1.5">
+                <svg class="w-4 h-4"><use href="#i-bolt"/></svg> Passo 1 de 3
+              </p>
+              <h1 class="font-condensed text-3xl font-extrabold tracking-tight text-white uppercase italic">
+                Escolha a Scooter e Período
+              </h1>
+            </div>
+          </div>
+
+          <!-- PONTO DE RETIRADA -->
+          <div class="bg-gloov-dark/80 p-4 rounded-xl border border-gloov-borderDark flex items-start gap-3">
+            <div class="p-2 rounded-lg bg-gloov-lime/10 text-gloov-lime shrink-0">
+              <svg class="w-6 h-6"><use href="#i-pin"/></svg>
+            </div>
+            <div class="text-sm">
+              <h3 class="font-bold text-white">Ponto de Retirada & Devolução Presencial</h3>
+              <p class="text-gray-300 mt-0.5">Gloov Rio Preto — Av. Dr. Antônio Tavares Pereira Lima, 188 · São José do Rio Preto, SP</p>
+              <p class="text-xs text-gray-400 mt-1">Horários: Seg a sex 9h–18h · Sáb 9h–13h</p>
+            </div>
+          </div>
+
+          <!-- SELEÇÃO DE MODALIDADE -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-200 mb-2">Modalidade do Aluguel</label>
+            <div class="grid grid-cols-2 gap-4">
+              <button type="button" id="btn-modalidade-semanal" onclick="setModalidade('semanal')" class="modalidade-btn p-4 rounded-xl border-2 border-gloov-lime bg-gloov-lime/10 text-left transition-all relative overflow-hidden">
+                <span class="block text-xs uppercase tracking-wider text-gloov-lime font-bold">Plano Semanal</span>
+                <span class="font-condensed text-2xl font-black text-white">Por Semana</span>
+                <span class="block text-xs text-gray-300 mt-1">Flexibilidade total</span>
+              </button>
+
+              <button type="button" id="btn-modalidade-mensal" onclick="setModalidade('mensal')" class="modalidade-btn p-4 rounded-xl border-2 border-gloov-borderDark bg-gloov-dark/50 text-left transition-all relative overflow-hidden hover:border-gloov-lime/50">
+                <div class="absolute top-2 right-2 bg-gloov-red text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                  Economize 25%
+                </div>
+                <span class="block text-xs uppercase tracking-wider text-gray-400 font-bold">Plano Mensal</span>
+                <span class="font-condensed text-2xl font-black text-white">Por Mês</span>
+                <span class="block text-xs text-gray-300 mt-1">Melhor custo-benefício</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- DATAS DE RETIRADA E DEVOLUÇÃO -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="retirada" class="block text-sm font-semibold text-gray-200 mb-1">Data e Hora de Retirada</label>
+              <input type="datetime-local" id="retirada" name="retirada" required step="1800" onchange="calculateDatesAndPrices()" class="w-full bg-gloov-dark border border-gloov-borderDark rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-gloov-lime focus:outline-none">
+            </div>
+
+            <div>
+              <label for="devolucao" class="block text-sm font-semibold text-gray-200 mb-1">Data e Hora de Devolução</label>
+              <input type="datetime-local" id="devolucao" name="devolucao" required step="1800" onchange="calculateDatesAndPrices()" class="w-full bg-gloov-dark border border-gloov-borderDark rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-gloov-lime focus:outline-none">
+            </div>
+          </div>
+          
+          <div id="date-error" class="hidden text-sm text-red-400 bg-red-950/40 border border-red-800/50 p-3 rounded-lg"></div>
+
+          <!-- SELEÇÃO DE SCOOTERS -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-200 mb-3">Selecione o Modelo da Scooter</label>
+            <div class="space-y-4">
+              
+              <!-- MODELO 1: X13 -->
+              <div class="relative">
+                <input type="radio" name="scooter" id="scooter-x13" value="x13" class="sr-only scooter-radio" checked onchange="selectScooter('x13')">
+                <label for="scooter-x13" class="flex flex-col sm:flex-row items-center gap-4 p-4 rounded-xl border border-gloov-borderDark bg-gloov-dark/60 cursor-pointer transition-all hover:border-gloov-lime/50">
+                  <img src="assets/img/scooter-x13.webp" alt="Scooter X13 Chopper" class="w-full sm:w-36 h-28 object-cover rounded-lg bg-gloov-olive" onerror="this.onerror=null; this.src='https://placehold.co/400x300/232E14/B8F22C?text=Scooter+X13'">
+                  <div class="flex-1 text-center sm:text-left">
+                    <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1">
+                      <h3 class="font-condensed text-2xl font-black text-white italic">X13</h3>
+                      <span class="px-2 py-0.5 rounded text-xs font-bold bg-gloov-olive text-gloov-lime border border-gloov-lime/30">Chopper</span>
+                      <span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-950 text-emerald-400 border border-emerald-800/40">Sem CNH</span>
+                    </div>
+                    <p class="text-xs text-gray-300">1.000 W · Vel. Máx 32 km/h · Recarga 4–8 h</p>
+                    <p class="text-xs text-gloov-lime mt-1 italic">Estilo marcante e máximo conforto para a cidade.</p>
+                  </div>
+                  <div class="text-right sm:border-l sm:border-gloov-borderDark sm:pl-4">
+                    <span class="block text-[11px] text-gray-400">A partir de</span>
+                    <span class="font-condensed text-2xl font-black text-gloov-lime" id="price-card-x13">R$ 200</span>
+                    <span class="block text-[10px] text-gray-400" id="period-card-x13">/semana</span>
+                  </div>
+                </label>
+              </div>
+
+              <!-- MODELO 2: CALEBITO -->
+              <div class="relative">
+                <input type="radio" name="scooter" id="scooter-calebito" value="calebito" class="sr-only scooter-radio" onchange="selectScooter('calebito')">
+                <label for="scooter-calebito" class="flex flex-col sm:flex-row items-center gap-4 p-4 rounded-xl border border-gloov-borderDark bg-gloov-dark/60 cursor-pointer transition-all hover:border-gloov-lime/50">
+                  <img src="assets/img/scooter-calebito.webp" alt="Scooter Calebito Urbana" class="w-full sm:w-36 h-28 object-cover rounded-lg bg-gloov-olive" onerror="this.onerror=null; this.src='https://placehold.co/400x300/232E14/B8F22C?text=Calebito'">
+                  <div class="flex-1 text-center sm:text-left">
+                    <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1">
+                      <h3 class="font-condensed text-2xl font-black text-white italic">Calebito</h3>
+                      <span class="px-2 py-0.5 rounded text-xs font-bold bg-gloov-olive text-gloov-lime border border-gloov-lime/30">Urbana</span>
+                      <span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-950 text-emerald-400 border border-emerald-800/40">Sem CNH</span>
+                    </div>
+                    <p class="text-xs text-gray-300">1.000 W · Vel. Máx 32 km/h · Cesta frontal inclusa</p>
+                    <p class="text-xs text-gloov-lime mt-1 italic">Perfeita para o dia a dia, entregas e pequenos trajetos.</p>
+                  </div>
+                  <div class="text-right sm:border-l sm:border-gloov-borderDark sm:pl-4">
+                    <span class="block text-[11px] text-gray-400">A partir de</span>
+                    <span class="font-condensed text-2xl font-black text-gloov-lime" id="price-card-calebito">R$ 200</span>
+                    <span class="block text-[10px] text-gray-400" id="period-card-calebito">/semana</span>
+                  </div>
+                </label>
+              </div>
+
+              <!-- MODELO 3: VTX VENTANE (EXIGE CNH) -->
+              <div class="relative">
+                <input type="radio" name="scooter" id="scooter-vtx" value="vtx" class="sr-only scooter-radio" onchange="selectScooter('vtx')">
+                <label for="scooter-vtx" class="flex flex-col sm:flex-row items-center gap-4 p-4 rounded-xl border border-gloov-borderDark bg-gloov-dark/60 cursor-pointer transition-all hover:border-gloov-lime/50">
+                  <img src="assets/img/scooter-vtx.webp" alt="Scooter VTX Ventane Premium" class="w-full sm:w-36 h-28 object-cover rounded-lg bg-gloov-olive" onerror="this.onerror=null; this.src='https://placehold.co/400x300/232E14/B8F22C?text=VTX+Ventane'">
+                  <div class="flex-1 text-center sm:text-left">
+                    <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1">
+                      <h3 class="font-condensed text-2xl font-black text-white italic">VTX Ventane</h3>
+                      <span class="px-2 py-0.5 rounded text-xs font-bold bg-gloov-olive text-gloov-lime border border-gloov-lime/30">Premium</span>
+                      <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-gloov-red/20 text-gloov-red border border-gloov-red/40">Exige CNH Cat. A</span>
+                    </div>
+                    <p class="text-xs text-gray-300">4.000 W · Vel. Máx 60 km/h · Autonomia Estendida</p>
+                    <p class="text-xs text-gloov-lime mt-1 italic">Alta potência para longas distâncias e avenidas rápidas.</p>
+                  </div>
+                  <div class="text-right sm:border-l sm:border-gloov-borderDark sm:pl-4">
+                    <span class="block text-[11px] text-gray-400">A partir de</span>
+                    <span class="font-condensed text-2xl font-black text-gloov-lime" id="price-card-vtx">R$ 350</span>
+                    <span class="block text-[10px] text-gray-400" id="period-card-vtx">/semana</span>
+                  </div>
+                </label>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- ADICIONAIS OPCIONAIS -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-200 mb-2">Adicionais Opcionais</label>
+            <p class="text-xs text-gray-400 mb-3">*1 Capacete padrão já está incluso gratuitamente na locação.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              
+              <label class="flex items-center gap-3 p-3 rounded-xl border border-gloov-borderDark bg-gloov-dark/40 cursor-pointer hover:border-gloov-lime/40">
+                <input type="checkbox" id="addon-capacete" onchange="calculateDatesAndPrices()" class="w-4 h-4 rounded text-gloov-lime bg-gloov-dark border-gloov-borderDark focus:ring-gloov-lime">
+                <div class="text-xs">
+                  <span class="block font-semibold text-white">Capacete Extra</span>
+                  <span class="text-gloov-lime">+ R$ 25,00 / per.</span>
+                </div>
+              </label>
+
+              <label class="flex items-center gap-3 p-3 rounded-xl border border-gloov-borderDark bg-gloov-dark/40 cursor-pointer hover:border-gloov-lime/40">
+                <input type="checkbox" id="addon-protecao" onchange="calculateDatesAndPrices()" class="w-4 h-4 rounded text-gloov-lime bg-gloov-dark border-gloov-borderDark focus:ring-gloov-lime">
+                <div class="text-xs">
+                  <span class="block font-semibold text-white">Proteção Avarias</span>
+                  <span class="text-gloov-lime">+ R$ 45,00 / per.</span>
+                </div>
+              </label>
+
+              <label class="flex items-center gap-3 p-3 rounded-xl border border-gloov-borderDark bg-gloov-dark/40 cursor-pointer hover:border-gloov-lime/40">
+                <input type="checkbox" id="addon-bau" onchange="calculateDatesAndPrices()" class="w-4 h-4 rounded text-gloov-lime bg-gloov-dark border-gloov-borderDark focus:ring-gloov-lime">
+                <div class="text-xs">
+                  <span class="block font-semibold text-white">Baú / Bagageiro</span>
+                  <span class="text-gloov-lime">+ R$ 30,00 / per.</span>
+                </div>
+              </label>
+
+            </div>
+          </div>
+
+          <!-- BOTÃO PROSSEGUIR PARA ETAPA 2 -->
+          <button type="button" onclick="goToStep(2)" class="w-full py-4 rounded-xl bg-gloov-red hover:bg-gloov-redHover text-white font-condensed font-black text-xl italic uppercase tracking-wider transition-transform active:scale-[0.99] flex items-center justify-center gap-2 shadow-lg shadow-gloov-red/20">
+            <span>Avançar para Seus Dados</span>
+            <svg class="w-5 h-5"><use href="#i-plus"/></svg>
+          </button>
+        </section>
+
+
+        <!-- ==========================================
+             ETAPA 2: DADOS DO LOCATÁRIO & DOCUMENTAÇÃO
+             ========================================== -->
+        <section id="step-2" class="step-content hidden glass-card rounded-2xl p-6 sm:p-8 space-y-6">
+          <div class="border-b border-gloov-borderDark pb-4 flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <p class="text-xs font-bold uppercase tracking-widest text-gloov-lime mb-1 flex items-center gap-1.5">
+                <svg class="w-4 h-4"><use href="#i-bolt"/></svg> Passo 2 de 3
+              </p>
+              <h2 class="font-condensed text-3xl font-extrabold tracking-tight text-white uppercase italic">
+                Seus Dados
+              </h2>
+            </div>
+
+            <!-- Indicador de preenchimento automático -->
+            <span id="autofill-badge" class="hidden inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gloov-lime/15 text-gloov-lime border border-gloov-lime/30 text-xs font-semibold">
+              <svg class="w-3.5 h-3.5"><use href="#i-check"/></svg> Preenchido via conta logada
+            </span>
+          </div>
+
+          <!-- RESUMO DOS DADOS DO PERFIL CARREGADO DO LOGIN.JS -->
+          <div id="resumo-perfil-logado" class="hidden bg-gloov-dark/80 border border-gloov-lime/30 rounded-xl p-4 text-xs space-y-2">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-gloov-borderDark pb-2">
+              <span class="font-bold text-gloov-lime uppercase tracking-wider">Informações da Conta (login.js)</span>
+              <span id="perfil-login-meta" class="text-[11px] text-gray-400"></span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-gray-300">
+              <p><strong class="text-white">Nome:</strong> <span id="perfil-info-nome">—</span></p>
+              <p><strong class="text-white">CPF:</strong> <span id="perfil-info-cpf">—</span></p>
+              <p><strong class="text-white">Nascimento:</strong> <span id="perfil-info-nascimento">—</span></p>
+              <p><strong class="text-white">E-mail:</strong> <span id="perfil-info-email">—</span></p>
+              <p><strong class="text-white">WhatsApp:</strong> <span id="perfil-info-whatsapp">—</span></p>
+              <p><strong class="text-white">CNH:</strong> <span id="perfil-info-cnh">—</span></p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- NOME COMPLETO -->
+            <div class="sm:col-span-2">
+              <label for="nome" class="block text-sm font-semibold text-gray-200 mb-1">Nome Completo *</label>
+              <input type="text" id="nome" name="nome" required placeholder="Ex: Lucas Henrique Mendes" class="w-full bg-gloov-dark border border-gloov-borderDark rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-gloov-lime focus:outline-none">
+            </div>
+
+            <!-- CPF -->
+            <div>
+              <label for="cpf" class="block text-sm font-semibold text-gray-200 mb-1">CPF *</label>
+              <input type="text" id="cpf" name="cpf" maxlength="14" required placeholder="000.000.000-00" oninput="maskCPF(this)" class="w-full bg-gloov-dark border border-gloov-borderDark rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-gloov-lime focus:outline-none">
+            </div>
+
+            <!-- DATA NASCIMENTO -->
+            <div>
+              <label for="nascimento" class="block text-sm font-semibold text-gray-200 mb-1">Data de Nascimento *</label>
+              <input type="date" id="nascimento" name="nascimento" required class="w-full bg-gloov-dark border border-gloov-borderDark rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-gloov-lime focus:outline-none">
+            </div>
+
+            <!-- E-MAIL -->
+            <div>
+              <label for="email" class="block text-sm font-semibold text-gray-200 mb-1">E-mail *</label>
+              <input type="email" id="email" name="email" required placeholder="cliente.teste@gloovrent.com.br" class="w-full bg-gloov-dark border border-gloov-borderDark rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-gloov-lime focus:outline-none">
+            </div>
+
+            <!-- WHATSAPP -->
+            <div>
+              <label for="whatsapp" class="block text-sm font-semibold text-gray-200 mb-1">WhatsApp / Celular *</label>
+              <input type="tel" id="whatsapp" name="whatsapp" maxlength="15" required placeholder="(17) 99123-4567" oninput="maskPhone(this)" class="w-full bg-gloov-dark border border-gloov-borderDark rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-gloov-lime focus:outline-none">
+            </div>
+          </div>
+
+          <!-- CAMPO CONDICIONAL DE CNH -->
+          <div id="cnh-box" class="hidden bg-gloov-red/10 border border-gloov-red/40 p-4 rounded-xl space-y-3">
+            <div class="flex items-center gap-2 text-gloov-red font-bold text-sm">
+              <svg class="w-5 h-5"><use href="#i-shield"/></svg>
+              <span>Exigência Obrigatória para o Modelo VTX Ventane</span>
+            </div>
+            <p class="text-xs text-gray-300">O modelo VTX Ventane (4.000W) requer obrigatoriamente CNH Categoria A válida para locação.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label for="cnh-numero" class="block text-xs font-semibold text-gray-200 mb-1">Número do Registro CNH *</label>
+                <input type="text" id="cnh-numero" placeholder="04829173650" class="w-full bg-gloov-dark border border-gloov-borderDark rounded-lg px-3 py-2 text-white text-sm focus:ring-1 focus:ring-gloov-lime">
+              </div>
+              <div>
+                <label for="cnh-validade" class="block text-xs font-semibold text-gray-200 mb-1">Validade CNH *</label>
+                <input type="date" id="cnh-validade" class="w-full bg-gloov-dark border border-gloov-borderDark rounded-lg px-3 py-2 text-white text-sm focus:ring-1 focus:ring-gloov-lime">
+              </div>
+            </div>
+          </div>
+
+          <!-- NOTA PARA MODELOS SEM CNH -->
+          <div id="no-cnh-box" class="bg-emerald-950/40 border border-emerald-800/40 p-4 rounded-xl text-xs text-emerald-300 flex items-center gap-3">
+            <svg class="w-5 h-5 text-emerald-400 shrink-0"><use href="#i-check"/></svg>
+            <span>Modelo isento de CNH! Basta apresentar um documento oficial com foto (RG/CNH) na retirada presencial.</span>
+          </div>
+
+          <!-- CHECKBOX DE TERMOS E CANCELAMENTO -->
+          <div class="space-y-3 pt-2">
+            <label class="flex items-start gap-3 text-xs text-gray-300 cursor-pointer">
+              <input type="checkbox" id="aceito-termos" required class="mt-0.5 w-4 h-4 rounded text-gloov-lime bg-gloov-dark border-gloov-borderDark focus:ring-gloov-lime">
+              <span>Li e concordo com os <a href="#" class="text-gloov-lime underline">Termos de Uso</a> e a <a href="#" class="text-gloov-lime underline">Política de Privacidade (LGPD)</a>.</span>
+            </label>
+
+            <label class="flex items-start gap-3 text-xs text-gray-300 cursor-pointer">
+              <input type="checkbox" id="aceito-cancelamento" required class="mt-0.5 w-4 h-4 rounded text-gloov-lime bg-gloov-dark border-gloov-borderDark focus:ring-gloov-lime">
+              <span>Estou ciente de que o <strong>cancelamento é gratuito até 24 horas</strong> antes do horário de retirada.</span>
+            </label>
+          </div>
+
+          <!-- BOTÕES DE NAVEGAÇÃO -->
+          <div class="flex items-center gap-4 pt-4">
+            <button type="button" onclick="goToStep(1)" class="py-3 px-6 rounded-xl border border-gloov-borderDark text-gray-300 font-semibold hover:bg-gloov-dark transition-colors">
+              Voltar
+            </button>
+            <button type="button" onclick="goToStep(3)" class="flex-1 py-4 rounded-xl bg-gloov-red hover:bg-gloov-redHover text-white font-condensed font-black text-xl italic uppercase tracking-wider transition-transform active:scale-[0.99] flex items-center justify-center gap-2 shadow-lg shadow-gloov-red/20">
+              <span>Ir para Pagamento</span>
+              <svg class="w-5 h-5"><use href="#i-plus"/></svg>
+            </button>
+          </div>
+        </section>
+
+
+        <!-- ==========================================
+             ETAPA 3: PAGAMENTO ONLINE
+             ========================================== -->
+        <section id="step-3" class="step-content hidden glass-card rounded-2xl p-6 sm:p-8 space-y-6">
+          <div class="border-b border-gloov-borderDark pb-4">
+            <p class="text-xs font-bold uppercase tracking-widest text-gloov-lime mb-1 flex items-center gap-1.5">
+              <svg class="w-4 h-4"><use href="#i-bolt"/></svg> Passo 3 de 3
+            </p>
+            <h2 class="font-condensed text-3xl font-extrabold tracking-tight text-white uppercase italic">
+              Forma de Pagamento
+            </h2>
+          </div>
+
+          <div class="bg-gloov-olive/80 border border-gloov-lime/30 p-4 rounded-xl text-xs space-y-1">
+            <div class="font-bold text-gloov-lime flex items-center gap-2 text-sm">
+              <svg class="w-4 h-4"><use href="#i-shield"/></svg>
+              <span>Sobre a Caução Reembolsável (50%)</span>
+            </div>
+            <p class="text-gray-300">A caução de 50% é retida preventivamente para cobrir eventuais avarias ou atrasos e será <strong>integralmente devolvida no encerramento da locação</strong> após a conferência presencial da scooter.</p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <button type="button" id="tab-btn-pix" onclick="switchPaymentTab('pix')" class="py-3 px-4 rounded-xl border-2 border-gloov-lime bg-gloov-lime/10 font-bold text-gloov-lime flex items-center justify-center gap-2 transition-all">
+              <svg class="w-5 h-5"><use href="#i-pix"/></svg>
+              <span>PIX (Aprovação Imediata)</span>
+            </button>
+
+            <button type="button" id="tab-btn-card" onclick="switchPaymentTab('card')" class="py-3 px-4 rounded-xl border-2 border-gloov-borderDark bg-gloov-dark/50 font-bold text-gray-400 flex items-center justify-center gap-2 transition-all hover:border-gloov-lime/50">
+              <svg class="w-5 h-5"><use href="#i-card"/></svg>
+              <span>Cartão Crédito / Débito</span>
+            </button>
+          </div>
+
+          <!-- ABA PIX -->
+          <div id="tab-pix-content" class="bg-gloov-dark/80 p-6 rounded-xl border border-gloov-borderDark text-center space-y-4">
+            <p class="text-xs text-gray-300">Escaneie o QR Code abaixo com o aplicativo do seu banco ou copie a chave PIX Copia e Cola:</p>
+            
+            <div class="inline-block bg-white p-4 rounded-2xl shadow-xl neon-pulse">
+              <img id="pix-qr-code" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=00020126580014BR.GOV.BCB.PIX0136gloov-rent-rio-preto-sp-reserva-pagamento52040000530398654051250.005802BR5915GLOOV+RENT+SJRP6015SAO+JOSE+DO+RIO62070503***6304C8A1" alt="QR Code PIX Gloov Rent" class="w-44 h-44 mx-auto">
+            </div>
+
+            <div>
+              <p class="text-xs text-gray-400 mb-1">Tempo restante para pagar via PIX:</p>
+              <div id="pix-timer" class="font-mono text-2xl font-black text-gloov-lime tracking-widest">15:00</div>
+            </div>
+
+            <div class="max-w-md mx-auto">
+              <label for="pix-code" class="sr-only">Código PIX Copia e Cola</label>
+              <div class="flex gap-2">
+                <input type="text" id="pix-code" readonly value="00020126580014BR.GOV.BCB.PIX0136gloov-rent-rio-preto-sp-reserva-pagamento52040000530398654051250.005802BR5915GLOOV+RENT+SJRP6015SAO+JOSE+DO+RIO62070503***6304C8A1" class="w-full bg-gloov-olive border border-gloov-borderDark rounded-xl px-3 py-2 text-xs text-gray-300 font-mono focus:outline-none">
+                <button type="button" onclick="copyPixCode()" class="px-4 py-2 rounded-xl bg-gloov-lime hover:bg-gloov-limeHover text-gloov-dark font-bold text-xs flex items-center gap-1.5 shrink-0 transition-colors">
+                  <svg class="w-4 h-4"><use href="#i-copy"/></svg>
+                  <span id="copy-btn-text">Copiar</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ABA CARTÃO -->
+          <div id="tab-card-content" class="hidden space-y-6">
+            <div class="grid grid-cols-2 gap-3 bg-gloov-dark/60 p-1.5 rounded-xl border border-gloov-borderDark">
+              <button type="button" id="btn-card-type-credit" onclick="setCardType('credit')" class="py-2 px-3 rounded-lg bg-gloov-lime text-gloov-dark font-bold text-xs uppercase tracking-wider transition-all">
+                Cartão de Crédito
+              </button>
+              <button type="button" id="btn-card-type-debit" onclick="setCardType('debit')" class="py-2 px-3 rounded-lg text-gray-400 hover:text-white font-bold text-xs uppercase tracking-wider transition-all">
+                Cartão de Débito
+              </button>
+            </div>
+
+            <div class="w-full max-w-sm mx-auto h-48 [perspective:1000px]">
+              <div id="credit-card-3d" class="credit-card-inner relative w-full h-full rounded-2xl p-6 bg-gradient-to-tr from-gloov-dark via-gloov-surface to-gloov-olive border border-gloov-lime/40 shadow-2xl text-white flex flex-col justify-between">
+                <div class="credit-card-front absolute inset-0 p-6 flex flex-col justify-between rounded-2xl bg-gradient-to-br from-gloov-dark/95 to-gloov-surface">
+                  <div class="flex justify-between items-center">
+                    <span id="preview-card-type-label" class="font-condensed font-black tracking-widest text-gloov-lime italic text-lg">GLOOV CRÉDITO</span>
+                    <svg class="w-8 h-8 text-white/70"><use href="#i-card"/></svg>
+                  </div>
+                  
+                  <div class="space-y-1">
+                    <span class="text-[10px] text-gray-400 uppercase tracking-widest block">Número do Cartão</span>
+                    <span id="preview-card-number" class="font-mono text-lg font-bold tracking-widest">•••• •••• •••• ••••</span>
+                  </div>
+
+                  <div class="flex justify-between items-end text-xs">
+                    <div>
+                      <span class="text-[9px] text-gray-400 uppercase block">Titular</span>
+                      <span id="preview-card-holder" class="font-semibold uppercase tracking-wider truncate max-w-[180px] block">NOME DO TITULAR</span>
+                    </div>
+                    <div>
+                      <span class="text-[9px] text-gray-400 uppercase block">Validade</span>
+                      <span id="preview-card-expiry" class="font-mono font-bold">MM/AA</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="credit-card-back absolute inset-0 p-6 flex flex-col justify-between rounded-2xl bg-gradient-to-br from-gloov-surface to-gloov-dark">
+                  <div class="w-full h-10 bg-black/80 -mx-6 mt-2"></div>
+                  <div class="bg-gray-200 text-black px-4 py-2 rounded font-mono text-right font-bold text-sm">
+                    CVV: <span id="preview-card-cvv">•••</span>
+                  </div>
+                  <p class="text-[9px] text-gray-400 text-center">Cartão emitido por instituição financeira parceira. Uso exclusivo para reserva Gloov Rent.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <div>
+                <label for="card-number" class="block text-xs font-semibold text-gray-200 mb-1">Número do Cartão</label>
+                <input type="text" id="card-number" maxlength="19" placeholder="0000 0000 0000 0000" oninput="updateCardPreview()" class="w-full bg-gloov-dark border border-gloov-borderDark rounded-xl px-4 py-3 text-white font-mono focus:ring-2 focus:ring-gloov-lime">
+              </div>
+
+              <div>
+                <label for="card-holder" class="block text-xs font-semibold text-gray-200 mb-1">Nome Impresso no Cartão</label>
+                <input type="text" id="card-holder" placeholder="COMO NO CARTÃO" oninput="updateCardPreview()" class="w-full bg-gloov-dark border border-gloov-borderDark rounded-xl px-4 py-3 text-white uppercase focus:ring-2 focus:ring-gloov-lime">
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label for="card-expiry" class="block text-xs font-semibold text-gray-200 mb-1">Validade (MM/AA)</label>
+                  <input type="text" id="card-expiry" maxlength="5" placeholder="MM/AA" oninput="updateCardPreview()" class="w-full bg-gloov-dark border border-gloov-borderDark rounded-xl px-4 py-3 text-white font-mono focus:ring-2 focus:ring-gloov-lime">
+                </div>
+                <div>
+                  <label for="card-cvv" class="block text-xs font-semibold text-gray-200 mb-1">CVV / Segurança</label>
+                  <input type="text" id="card-cvv" maxlength="4" placeholder="123" onfocus="flipCard(true)" onblur="flipCard(false)" oninput="updateCardPreview()" class="w-full bg-gloov-dark border border-gloov-borderDark rounded-xl px-4 py-3 text-white font-mono focus:ring-2 focus:ring-gloov-lime">
+                </div>
+              </div>
+
+              <div id="installments-wrapper">
+                <label for="card-installments" class="block text-xs font-semibold text-gray-200 mb-1">Parcelamento</label>
+                <select id="card-installments" class="w-full bg-gloov-dark border border-gloov-borderDark rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-gloov-lime">
+                  <option value="1">1x sem juros (À vista)</option>
+                  <option value="2">2x sem juros</option>
+                  <option value="3">3x sem juros</option>
+                  <option value="6">6x sem juros</option>
+                  <option value="12">12x com acréscimo</option>
+                </select>
+              </div>
+              
+              <div id="debit-notice" class="hidden bg-gloov-lime/10 border border-gloov-lime/30 p-3 rounded-xl text-xs text-gloov-lime flex items-center gap-2">
+                <svg class="w-4 h-4 shrink-0"><use href="#i-check"/></svg>
+                <span>Pagamento à vista no Cartão de Débito (aprovação instantânea).</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-4 pt-4">
+            <button type="button" onclick="goToStep(2)" class="py-3 px-6 rounded-xl border border-gloov-borderDark text-gray-300 font-semibold hover:bg-gloov-dark transition-colors">
+              Voltar
+            </button>
+            <button type="submit" id="btn-submit-final" class="flex-1 py-4 rounded-xl bg-gloov-red hover:bg-gloov-redHover text-white font-condensed font-black text-xl italic uppercase tracking-wider transition-transform active:scale-[0.99] flex items-center justify-center gap-2 shadow-xl shadow-gloov-red/30">
+              <svg class="w-6 h-6"><use href="#i-check"/></svg>
+              <span>Confirmar e Pagar Reserva</span>
+            </button>
+          </div>
+        </section>
+
+      </form>
+
+    </div>
+
+    <!-- COLUNA DIREITA: RESUMO DA LOCAÇÃO -->
+    <div class="lg:col-span-5 sticky top-28 space-y-6">
+      <div class="glass-card rounded-2xl p-6 border border-gloov-lime/20 space-y-6 shadow-2xl">
+        <div class="border-b border-gloov-borderDark pb-3 flex items-center justify-between">
+          <h3 class="font-condensed text-2xl font-black text-white italic uppercase tracking-wide">Resumo da Locação</h3>
+          <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gloov-lime/20 text-gloov-lime border border-gloov-lime/30 uppercase" id="summary-modalidade-badge">Semanal</span>
+        </div>
+
+        <div class="flex items-center gap-4 bg-gloov-dark/70 p-3 rounded-xl border border-gloov-borderDark">
+          <img id="summary-scooter-img" src="assets/img/scooter-x13.webp" alt="Scooter Selecionada" class="w-20 h-16 object-cover rounded-lg bg-gloov-olive" onerror="this.onerror=null; this.src='https://placehold.co/200x150/232E14/B8F22C?text=Scooter'">
+          <div>
+            <div class="flex items-center gap-2">
+              <h4 id="summary-scooter-name" class="font-condensed text-xl font-extrabold text-white italic">X13</h4>
+              <span id="summary-scooter-tag" class="text-[10px] font-bold px-2 py-0.5 rounded bg-gloov-olive text-gloov-lime">Chopper</span>
+            </div>
+            <p id="summary-scooter-cnh" class="text-[11px] text-emerald-400 font-medium">Isento de CNH</p>
+          </div>
+        </div>
+
+        <div class="space-y-3 text-xs text-gray-300">
+          <div class="flex justify-between border-b border-gloov-borderDark/50 pb-2">
+            <span class="text-gray-400">Retirada:</span>
+            <span id="summary-retirada" class="font-semibold text-white">Selecione as datas</span>
+          </div>
+
+          <div class="flex justify-between border-b border-gloov-borderDark/50 pb-2">
+            <span class="text-gray-400">Devolução:</span>
+            <span id="summary-devolucao" class="font-semibold text-white">Selecione as datas</span>
+          </div>
+
+          <div class="flex justify-between border-b border-gloov-borderDark/50 pb-2">
+            <span class="text-gray-400">Duração Calculada:</span>
+            <span id="summary-duracao" class="font-bold text-gloov-lime">1 semana</span>
+          </div>
+        </div>
+
+        <div class="space-y-2 text-xs">
+          <div class="flex justify-between text-gray-300">
+            <span>Aluguel Scooter (<span id="summary-period-count">1 per.</span>):</span>
+            <span id="summary-val-base" class="font-medium text-white">R$ 200,00</span>
+          </div>
+
+          <div id="summary-row-addons" class="flex justify-between text-gray-300">
+            <span>Adicionais Selecionados:</span>
+            <span id="summary-val-addons" class="font-medium text-white">R$ 0,00</span>
+          </div>
+
+          <div class="flex justify-between text-gray-300 border-t border-gloov-borderDark/50 pt-2">
+            <span class="font-semibold text-white">Subtotal Aluguel:</span>
+            <span id="summary-val-subtotal" class="font-bold text-white">R$ 200,00</span>
+          </div>
+
+          <div class="flex justify-between text-gloov-lime bg-gloov-lime/5 p-2 rounded-lg border border-gloov-lime/20">
+            <span>Caução (50% Reembolsável):</span>
+            <span id="summary-val-caucao" class="font-bold">R$ 100,00</span>
+          </div>
+        </div>
+
+        <div class="bg-gloov-dark p-4 rounded-xl border border-gloov-borderDark flex items-center justify-between">
+          <div>
+            <span class="block text-[11px] uppercase tracking-wider text-gray-400 font-bold">Total a Pagar Agora</span>
+            <span class="text-[10px] text-gray-400">(Aluguel + Caução Reembolsável)</span>
+          </div>
+          <span id="summary-val-total" class="font-condensed text-3xl font-black text-gloov-lime tracking-tight">R$ 300,00</span>
+        </div>
+
+        <div class="flex items-center gap-2 text-[11px] text-gray-400">
+          <svg class="w-4 h-4 text-gloov-lime shrink-0"><use href="#i-shield"/></svg>
+          <span>Cancelamento grátis até 24h antes da retirada.</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<!-- MODAL DE CONFIRMAÇÃO DA RESERVA -->
+<div id="modal-comprovante" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl hidden flex items-center justify-center p-4 overflow-y-auto">
+  <div class="bg-white text-gloov-dark rounded-3xl max-w-2xl w-full p-6 sm:p-10 space-y-6 shadow-2xl relative">
+    <button type="button" onclick="closeVoucherModal()" class="no-print absolute top-6 right-6 w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center justify-center transition-colors">
+      <svg class="w-6 h-6"><use href="#i-close"/></svg>
+    </button>
+
+    <div class="border-b-2 border-gray-100 pb-6 text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 font-bold text-xs mb-2">
+          <svg class="w-4 h-4"><use href="#i-check"/></svg> Pagamento Confirmado · Reserva Garantida
+        </div>
+        <h2 class="font-condensed text-3xl font-black italic tracking-wide uppercase">Comprovante de Reserva</h2>
+        <p class="text-xs text-gray-500">Gloov Rent — Mobilidade Elétrica Urbana</p>
+      </div>
+
+      <div class="text-center sm:text-right bg-gray-50 p-3 rounded-2xl border border-gray-200">
+        <span class="block text-[10px] uppercase font-bold text-gray-400">Código da Reserva</span>
+        <span id="voucher-code" class="font-mono text-lg font-black text-gloov-dark">#GLV-2026-8492</span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+      <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-1">
+        <span class="font-bold text-gray-400 uppercase text-[10px] block mb-1">Locatário</span>
+        <p id="voucher-nome" class="font-bold text-sm text-gray-900">Lucas Henrique Mendes</p>
+        <p id="voucher-cpf" class="text-gray-600">CPF: 000.000.000-00</p>
+        <p id="voucher-email" class="text-gray-600">email@exemplo.com</p>
+        <p id="voucher-phone" class="text-gray-600">WhatsApp: (17) 99999-9999</p>
+      </div>
+
+      <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-1">
+        <span class="font-bold text-gray-400 uppercase text-[10px] block mb-1">Scooter Selecionada</span>
+        <p id="voucher-scooter-name" class="font-condensed font-black text-xl text-gloov-dark italic">X13 (Chopper)</p>
+        <p id="voucher-scooter-cnh" class="text-emerald-700 font-semibold">Sem Exigência de CNH</p>
+        <p id="voucher-modalidade" class="text-gray-600">Modalidade: Semanal</p>
+      </div>
+
+      <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-1">
+        <span class="font-bold text-gray-400 uppercase text-[10px] block mb-1">Período da Locação</span>
+        <p id="voucher-retirada" class="text-gray-800">Retirada: <strong>--/--/---- --:--</strong></p>
+        <p id="voucher-devolucao" class="text-gray-800">Devolução: <strong>--/--/---- --:--</strong></p>
+      </div>
+
+      <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-1">
+        <span class="font-bold text-gray-400 uppercase text-[10px] block mb-1">Valores Pagos</span>
+        <p id="voucher-val-aluguel" class="text-gray-700">Aluguel: R$ 200,00</p>
+        <p id="voucher-val-caucao" class="text-gray-700">Caução (50%): R$ 100,00</p>
+        <p id="voucher-val-total" class="font-bold text-sm text-emerald-700 pt-1 border-t border-gray-200">Total Pago: R$ 300,00</p>
+      </div>
+    </div>
+
+    <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl text-xs text-emerald-900 space-y-2">
+      <div class="font-bold flex items-center gap-2">
+        <svg class="w-4 h-4 text-emerald-700"><use href="#i-pin"/></svg>
+        <span>Endereço para Retirada Presencial:</span>
+      </div>
+      <p class="pl-6">Gloov Rio Preto — Av. Dr. Antônio Tavares Pereira Lima, 188 · São José do Rio Preto, SP 15061-220</p>
+      <p class="pl-6 text-[11px] text-emerald-700">Apresente este comprovante impresso ou na tela do celular junto com seu documento oficial com foto.</p>
+    </div>
+
+    <div class="no-print flex flex-wrap gap-3 pt-2">
+      <button type="button" onclick="window.print()" class="flex-1 py-3 px-4 rounded-xl bg-gray-900 hover:bg-black text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors">
+        <svg class="w-4 h-4"><use href="#i-copy"/></svg>
+        <span>Imprimir / Salvar PDF</span>
+      </button>
+
+      <a id="btn-share-email" href="#" class="flex-1 py-3 px-4 rounded-xl bg-gloov-dark hover:bg-gloov-olive text-gloov-lime border border-gloov-lime/40 font-bold text-xs flex items-center justify-center gap-2 transition-colors text-center">
+        <svg class="w-4 h-4"><use href="#i-mail"/></svg>
+        <span>Enviar por E-mail</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- RODAPÉ -->
+<footer class="bg-gloov-dark border-t border-gloov-borderDark py-8 mt-12 text-center text-xs text-gray-400">
+  <div class="max-w-7xl mx-auto px-4">
+    <p>© 2026 Gloov Rent · Locação de Scooters Elétricas · São José do Rio Preto - SP</p>
+    <p class="mt-1 text-[11px] text-gray-400">Av. Dr. Antônio Tavares Pereira Lima, 188 · CNPJ 00.000.000/0001-00</p>
+  </div>
+</footer>
+
+<!-- LÓGICA EM JAVASCRIPT PURO -->
+<script>
+  const bookingState = {
+    step: 1,
+    modalidade: 'semanal',
+    scooter: 'x13',
+    retirada: null,
+    devolucao: null,
+    periodsCount: 1,
+    addons: {
+      capacete: false,
+      protecao: false,
+      bau: false
+    },
+    paymentMethod: 'pix',
+    cardType: 'credit'
+  };
+
+  const scootersData = {
+    x13: {
+      name: 'X13',
+      tag: 'Chopper',
+      cnhRequired: false,
+      cnhText: 'Isento de CNH',
+      img: 'assets/img/scooter-x13.webp',
+      priceWeekly: 200,
+      priceMonthly: 600
+    },
+    calebito: {
+      name: 'Calebito',
+      tag: 'Urbana',
+      cnhRequired: false,
+      cnhText: 'Isento de CNH',
+      img: 'assets/img/scooter-calebito.webp',
+      priceWeekly: 200,
+      priceMonthly: 600
+    },
+    vtx: {
+      name: 'VTX Ventane',
+      tag: 'Premium',
+      cnhRequired: true,
+      cnhText: 'Exige CNH Cat. A',
+      img: 'assets/img/scooter-vtx.webp',
+      priceWeekly: 350,
+      priceMonthly: 1050
+    }
+  };
+
+  const addonPrices = {
+    capacete: 25,
+    protecao: 45,
+    bau: 30
+  };
+
+  function formatDateISOToBR(dateStr) {
+    if (!dateStr) return '—';
+    const parts = dateStr.split('-');
+    if (parts.length !== 3) return dateStr;
+    return `${parts[2]}/${parts[1]}/${parts[0]}`;
+  }
+
+  // PREENCHIMENTO AUTOMÁTICO COM DADOS DO LOGIN.JS (gloov_sessao_teste)
+  function obterSessaoSalva() {
+    const chaves = ['gloov_sessao_teste', 'gloov_usuario_logado'];
+    const storages = [localStorage, sessionStorage];
+
+    for (const chave of chaves) {
+      for (const store of storages) {
+        const bruto = store.getItem(chave);
+        if (bruto) {
+          try {
+            return {
+              raw: JSON.parse(bruto),
+              origem: store === localStorage ? 'localStorage' : 'sessionStorage'
+            };
+          } catch (erro) {
+            console.error('Erro ao ler dados da sessão:', erro);
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  function preencherDadosUsuarioLogado() {
+    const sessaoEncontrada = obterSessaoSalva();
+    if (!sessaoEncontrada) return;
+
+    const dados = sessaoEncontrada.raw;
+    const perfil = dados.perfil || dados;
+
+    if (perfil.nome) document.getElementById('nome').value = perfil.nome;
+    if (perfil.cpf) document.getElementById('cpf').value = perfil.cpf;
+    if (perfil.nascimento) document.getElementById('nascimento').value = perfil.nascimento;
+    if (perfil.email) document.getElementById('email').value = perfil.email;
+    if (perfil.whatsapp) document.getElementById('whatsapp').value = perfil.whatsapp;
+    if (perfil.cnhNumero) document.getElementById('cnh-numero').value = perfil.cnhNumero;
+    if (perfil.cnhValidade) document.getElementById('cnh-validade').value = perfil.cnhValidade;
+
+    const sessionBadge = document.getElementById('user-session-badge');
+    const headerName = document.getElementById('header-user-name');
+    const autofillBadge = document.getElementById('autofill-badge');
+
+    if (sessionBadge && headerName && perfil.nome) {
+      headerName.textContent = perfil.nome.split(' ')[0];
+      sessionBadge.classList.remove('hidden');
+      sessionBadge.classList.add('flex');
+    }
+
+    if (autofillBadge) {
+      autofillBadge.classList.remove('hidden');
+    }
+
+    const resumoBox = document.getElementById('resumo-perfil-logado');
+    if (resumoBox) {
+      resumoBox.classList.remove('hidden');
+      document.getElementById('perfil-info-nome').textContent = perfil.nome || '—';
+      document.getElementById('perfil-info-cpf').textContent = perfil.cpf || '—';
+      document.getElementById('perfil-info-nascimento').textContent = formatDateISOToBR(perfil.nascimento);
+      document.getElementById('perfil-info-email').textContent = perfil.email || '—';
+      document.getElementById('perfil-info-whatsapp').textContent = perfil.whatsapp || '—';
+
+      const cnhResumo = perfil.cnhNumero
+        ? `${perfil.cnhNumero} (Val.: ${formatDateISOToBR(perfil.cnhValidade)})`
+        : 'Não informada';
+      document.getElementById('perfil-info-cnh').textContent = cnhResumo;
+
+      const metaEl = document.getElementById('perfil-login-meta');
+      if (metaEl) {
+        const pontoInfo = dados.padraoReserva?.ponto ? `Ponto: ${dados.padraoReserva.ponto}` : sessaoEncontrada.origem;
+        metaEl.textContent = pontoInfo;
+      }
+    }
+  }
+
+  function logoutUsuario() {
+    ['gloov_sessao_teste', 'gloov_usuario_logado'].forEach((chave) => {
+      localStorage.removeItem(chave);
+      sessionStorage.removeItem(chave);
+    });
+    window.location.href = 'login.html';
+  }
+
+  // Salva a reserva vinculada à sessão ativa para consulta posterior
+  function salvarReservaNaSessao(reservaObj) {
+    const sessao = obterSessaoSalva();
+    const chaveReservas = 'gloov_reservas_usuario';
+    const destino = sessao && sessao.origem === 'sessionStorage' ? sessionStorage : localStorage;
+
+    let lista = [];
+    try {
+      const atual = destino.getItem(chaveReservas) || localStorage.getItem(chaveReservas) || sessionStorage.getItem(chaveReservas);
+      if (atual) lista = JSON.parse(atual);
+    } catch (e) {
+      console.error('Erro ao ler histórico de reservas:', e);
+    }
+
+    // Evita duplicar se o usuário clicar duas vezes no mesmo código
+    lista = lista.filter((item) => item.codigo !== reservaObj.codigo);
+    lista.unshift(reservaObj);
+
+    destino.setItem(chaveReservas, JSON.stringify(lista));
+    localStorage.setItem('gloov_ultima_reserva', JSON.stringify(reservaObj));
+  }
+
+  function redirecionarParaConsulta(codigo, acao) {
+    const params = new URLSearchParams({
+      reserva: codigo.replace(/^#/, ''),
+      acao: acao
+    });
+    window.location.href = `minhas-reservas.html?${params.toString()}`;
+  }
+
+  function imprimirEIrParaConsulta(codigo) {
+    window.print();
+    setTimeout(() => {
+      redirecionarParaConsulta(codigo, 'pdf');
+    }, 400);
+  }
+
+  function enviarEmailEIrParaConsulta(event, hrefMailto, codigo) {
+    event.preventDefault();
+    window.location.href = hrefMailto;
+    setTimeout(() => {
+      redirecionarParaConsulta(codigo, 'email');
+    }, 600);
+  }
+
+  // INICIALIZAÇÃO AO CARREGAR A PÁGINA
+  window.addEventListener('DOMContentLoaded', () => {
+    preencherDadosUsuarioLogado();
+
+    const now = new Date();
+    const defaultRetirada = new Date(now.getTime() + (24 * 60 * 60 * 1000));
+    defaultRetirada.setHours(10, 0, 0, 0);
+
+    const defaultDevolucao = new Date(defaultRetirada.getTime() + (7 * 24 * 60 * 60 * 1000));
+
+    document.getElementById('retirada').value = formatDatetimeLocal(defaultRetirada);
+    document.getElementById('devolucao').value = formatDatetimeLocal(defaultDevolucao);
+    document.getElementById('retirada').min = formatDatetimeLocal(now);
+
+    calculateDatesAndPrices();
+    updateStepUI();
+    startPixTimer();
+  });
+
+  function formatDatetimeLocal(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  }
+
+  function setModalidade(mod) {
+    bookingState.modalidade = mod;
+    const btnSemanal = document.getElementById('btn-modalidade-semanal');
+    const btnMensal = document.getElementById('btn-modalidade-mensal');
+
+    if (mod === 'semanal') {
+      btnSemanal.className = "modalidade-btn p-4 rounded-xl border-2 border-gloov-lime bg-gloov-lime/10 text-left transition-all relative overflow-hidden";
+      btnMensal.className = "modalidade-btn p-4 rounded-xl border-2 border-gloov-borderDark bg-gloov-dark/50 text-left transition-all relative overflow-hidden hover:border-gloov-lime/50";
+    } else {
+      btnMensal.className = "modalidade-btn p-4 rounded-xl border-2 border-gloov-lime bg-gloov-lime/10 text-left transition-all relative overflow-hidden";
+      btnSemanal.className = "modalidade-btn p-4 rounded-xl border-2 border-gloov-borderDark bg-gloov-dark/50 text-left transition-all relative overflow-hidden hover:border-gloov-lime/50";
+    }
+
+    const rVal = document.getElementById('retirada').value;
+    if (rVal) {
+      const retDate = new Date(rVal);
+      const addDays = mod === 'semanal' ? 7 : 30;
+      const newDevDate = new Date(retDate.getTime() + (addDays * 24 * 60 * 60 * 1000));
+      document.getElementById('devolucao').value = formatDatetimeLocal(newDevDate);
+    }
+
+    calculateDatesAndPrices();
+  }
+
+  function selectScooter(modelKey) {
+    bookingState.scooter = modelKey;
+    const model = scootersData[modelKey];
+
+    const cnhBox = document.getElementById('cnh-box');
+    const noCnhBox = document.getElementById('no-cnh-box');
+    if (model.cnhRequired) {
+      cnhBox.classList.remove('hidden');
+      noCnhBox.classList.add('hidden');
+    } else {
+      cnhBox.classList.add('hidden');
+      noCnhBox.classList.remove('hidden');
+    }
+
+    calculateDatesAndPrices();
+  }
+
+  function calculateDatesAndPrices() {
+    const rInput = document.getElementById('retirada').value;
+    const dInput = document.getElementById('devolucao').value;
+    const errorBox = document.getElementById('date-error');
+
+    if (!rInput || !dInput) return;
+
+    const dateRet = new Date(rInput);
+    const dateDev = new Date(dInput);
+
+    if (dateDev <= dateRet) {
+      errorBox.textContent = 'A data de devolução deve ser posterior à data de retirada.';
+      errorBox.classList.remove('hidden');
+      return;
+    } else {
+      errorBox.classList.add('hidden');
+    }
+
+    const diffMs = dateDev - dateRet;
+    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+    if (bookingState.modalidade === 'semanal') {
+      bookingState.periodsCount = Math.max(1, Math.ceil(diffDays / 7));
+    } else {
+      bookingState.periodsCount = Math.max(1, Math.ceil(diffDays / 30));
+    }
+
+    bookingState.addons.capacete = document.getElementById('addon-capacete').checked;
+    bookingState.addons.protecao = document.getElementById('addon-protecao').checked;
+    bookingState.addons.bau = document.getElementById('addon-bau').checked;
+
+    document.getElementById('price-card-x13').textContent = bookingState.modalidade === 'semanal' ? 'R$ 200' : 'R$ 600';
+    document.getElementById('period-card-x13').textContent = bookingState.modalidade === 'semanal' ? '/semana' : '/mês';
+
+    document.getElementById('price-card-calebito').textContent = bookingState.modalidade === 'semanal' ? 'R$ 200' : 'R$ 600';
+    document.getElementById('period-card-calebito').textContent = bookingState.modalidade === 'semanal' ? '/semana' : '/mês';
+
+    document.getElementById('price-card-vtx').textContent = bookingState.modalidade === 'semanal' ? 'R$ 350' : 'R$ 1.050';
+    document.getElementById('period-card-vtx').textContent = bookingState.modalidade === 'semanal' ? '/semana' : '/mês';
+
+    const model = scootersData[bookingState.scooter];
+    const baseUnitPrice = bookingState.modalidade === 'semanal' ? model.priceWeekly : model.priceMonthly;
+    const totalBaseRent = baseUnitPrice * bookingState.periodsCount;
+
+    let totalAddons = 0;
+    if (bookingState.addons.capacete) totalAddons += addonPrices.capacete;
+    if (bookingState.addons.protecao) totalAddons += addonPrices.protecao;
+    if (bookingState.addons.bau) totalAddons += addonPrices.bau;
+
+    const subtotalRent = totalBaseRent + totalAddons;
+    const caucao = totalBaseRent * 0.5;
+    const grandTotal = subtotalRent + caucao;
+
+    document.getElementById('summary-modalidade-badge').textContent = bookingState.modalidade === 'semanal' ? 'Semanal' : 'Mensal';
+    document.getElementById('summary-scooter-img').src = model.img;
+    document.getElementById('summary-scooter-name').textContent = model.name;
+    document.getElementById('summary-scooter-tag').textContent = model.tag;
+    document.getElementById('summary-scooter-cnh').textContent = model.cnhText;
+    document.getElementById('summary-scooter-cnh').className = model.cnhRequired ? 'text-[11px] text-gloov-red font-bold' : 'text-[11px] text-emerald-400 font-medium';
+
+    document.getElementById('summary-retirada').textContent = formatDateDisplay(dateRet);
+    document.getElementById('summary-devolucao').textContent = formatDateDisplay(dateDev);
+
+    const periodLabel = bookingState.modalidade === 'semanal' ? (bookingState.periodsCount > 1 ? 'semanas' : 'semana') : (bookingState.periodsCount > 1 ? 'meses' : 'mês');
+    document.getElementById('summary-duracao').textContent = `${diffDays} dia(s) (${bookingState.periodsCount} ${periodLabel})`;
+    document.getElementById('summary-period-count').textContent = `${bookingState.periodsCount} ${periodLabel}`;
+
+    document.getElementById('summary-val-base').textContent = formatCurrency(totalBaseRent);
+    document.getElementById('summary-val-addons').textContent = formatCurrency(totalAddons);
+    document.getElementById('summary-val-subtotal').textContent = formatCurrency(subtotalRent);
+    document.getElementById('summary-val-caucao').textContent = formatCurrency(caucao);
+    document.getElementById('summary-val-total').textContent = formatCurrency(grandTotal);
+  }
+
+  function formatCurrency(val) {
+    return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  }
+
+  function formatDateDisplay(d) {
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    const hours = String(d.getHours()).padStart(2, '0');
+    const minutes = String(d.getMinutes()).padStart(2, '0');
+    return `${day}/${month}/${year} às ${hours}:${minutes}`;
+  }
+
+  function goToStep(targetStep) {
+    if (targetStep === 2 && bookingState.step === 1) {
+      const errorBox = document.getElementById('date-error');
+      if (!errorBox.classList.contains('hidden')) return;
+    }
+
+    if (targetStep === 3 && bookingState.step === 2) {
+      const nome = document.getElementById('nome').value.trim();
+      const cpf = document.getElementById('cpf').value.trim();
+      const nascimento = document.getElementById('nascimento').value;
+      const email = document.getElementById('email').value.trim();
+      const whatsapp = document.getElementById('whatsapp').value.trim();
+      const termos = document.getElementById('aceito-termos').checked;
+      const cancelamento = document.getElementById('aceito-cancelamento').checked;
+
+      if (!nome || !cpf || !nascimento || !email || !whatsapp || !termos || !cancelamento) {
+        alert('Por favor, preencha todos os campos obrigatórios e aceite os termos para continuar.');
+        return;
+      }
+
+      if (scootersData[bookingState.scooter].cnhRequired) {
+        const cnhNum = document.getElementById('cnh-numero').value.trim();
+        const cnhVal = document.getElementById('cnh-validade').value;
+        if (!cnhNum || !cnhVal) {
+          alert('A scooter VTX Ventane exige o preenchimento da CNH Categoria A.');
+          return;
+        }
+      }
+    }
+
+    bookingState.step = targetStep;
+    updateStepUI();
+    window.scrollTo({ top: 120, behavior: 'smooth' });
+  }
+
+  function updateStepUI() {
+    document.querySelectorAll('.step-content').forEach(el => el.classList.add('hidden'));
+    document.getElementById(`step-${bookingState.step}`).classList.remove('hidden');
+
+    const progressLine = document.getElementById('progress-line');
+    if (bookingState.step === 1) progressLine.style.width = '0%';
+    if (bookingState.step === 2) progressLine.style.width = '50%';
+    if (bookingState.step === 3) progressLine.style.width = '100%';
+
+    document.querySelectorAll('.step-indicator').forEach(ind => {
+      const stepNum = parseInt(ind.getAttribute('data-step'));
+      const btn = ind.querySelector('button');
+      const label = ind.querySelector('span');
+
+      if (stepNum <= bookingState.step) {
+        btn.className = "w-10 h-10 rounded-full bg-gloov-lime text-gloov-dark font-condensed font-bold text-lg flex items-center justify-center ring-4 ring-gloov-dark transition-transform hover:scale-110";
+        label.className = "text-xs font-semibold mt-2 text-gloov-lime uppercase tracking-wider";
+      } else {
+        btn.className = "w-10 h-10 rounded-full bg-gloov-olive text-gray-400 font-condensed font-bold text-lg flex items-center justify-center ring-4 ring-gloov-dark border border-gloov-borderDark transition-transform hover:scale-110";
+        label.className = "text-xs font-semibold mt-2 text-gray-400 uppercase tracking-wider";
+      }
+    });
+  }
+
+  function switchPaymentTab(method) {
+    bookingState.paymentMethod = method;
+    const tabPixBtn = document.getElementById('tab-btn-pix');
+    const tabCardBtn = document.getElementById('tab-btn-card');
+    const contentPix = document.getElementById('tab-pix-content');
+    const contentCard = document.getElementById('tab-card-content');
+
+    if (method === 'pix') {
+      tabPixBtn.className = "py-3 px-4 rounded-xl border-2 border-gloov-lime bg-gloov-lime/10 font-bold text-gloov-lime flex items-center justify-center gap-2 transition-all";
+      tabCardBtn.className = "py-3 px-4 rounded-xl border-2 border-gloov-borderDark bg-gloov-dark/50 font-bold text-gray-400 flex items-center justify-center gap-2 transition-all hover:border-gloov-lime/50";
+      contentPix.classList.remove('hidden');
+      contentCard.classList.add('hidden');
+    } else {
+      tabCardBtn.className = "py-3 px-4 rounded-xl border-2 border-gloov-lime bg-gloov-lime/10 font-bold text-gloov-lime flex items-center justify-center gap-2 transition-all";
+      tabPixBtn.className = "py-3 px-4 rounded-xl border-2 border-gloov-borderDark bg-gloov-dark/50 font-bold text-gray-400 flex items-center justify-center gap-2 transition-all hover:border-gloov-lime/50";
+      contentCard.classList.remove('hidden');
+      contentPix.classList.add('hidden');
+    }
+  }
+
+  function setCardType(type) {
+    bookingState.cardType = type;
+    const btnCredit = document.getElementById('btn-card-type-credit');
+    const btnDebit = document.getElementById('btn-card-type-debit');
+    const cardLabel = document.getElementById('preview-card-type-label');
+    const installmentsWrapper = document.getElementById('installments-wrapper');
+    const debitNotice = document.getElementById('debit-notice');
+
+    if (type === 'credit') {
+      btnCredit.className = "py-2 px-3 rounded-lg bg-gloov-lime text-gloov-dark font-bold text-xs uppercase tracking-wider transition-all";
+      btnDebit.className = "py-2 px-3 rounded-lg text-gray-400 hover:text-white font-bold text-xs uppercase tracking-wider transition-all";
+      cardLabel.textContent = "GLOOV CRÉDITO";
+      installmentsWrapper.classList.remove('hidden');
+      debitNotice.classList.add('hidden');
+    } else {
+      btnDebit.className = "py-2 px-3 rounded-lg bg-gloov-lime text-gloov-dark font-bold text-xs uppercase tracking-wider transition-all";
+      btnCredit.className = "py-2 px-3 rounded-lg text-gray-400 hover:text-white font-bold text-xs uppercase tracking-wider transition-all";
+      cardLabel.textContent = "GLOOV DÉBITO";
+      installmentsWrapper.classList.add('hidden');
+      debitNotice.classList.remove('hidden');
+    }
+  }
+
+  function maskCPF(input) {
+    let v = input.value.replace(/\D/g, '');
+    if (v.length > 11) v = v.substring(0, 11);
+    v = v.replace(/(\d{3})(\d)/, '$1.$2');
+    v = v.replace(/(\d{3})(\d)/, '$1.$2');
+    v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    input.value = v;
+  }
+
+  function maskPhone(input) {
+    let v = input.value.replace(/\D/g, '');
+    if (v.length > 11) v = v.substring(0, 11);
+    v = v.replace(/^(\d{2})(\d)/, '($1) $2');
+    v = v.replace(/(\d{5})(\d)/, '$1-$2');
+    input.value = v;
+  }
+
+  function updateCardPreview() {
+    let num = document.getElementById('card-number').value.replace(/\D/g, '');
+    num = num.replace(/(.{4})/g, '$1 ').trim();
+    document.getElementById('card-number').value = num;
+    document.getElementById('preview-card-number').textContent = num || '•••• •••• •••• ••••';
+
+    const holder = document.getElementById('card-holder').value;
+    document.getElementById('preview-card-holder').textContent = holder || 'NOME DO TITULAR';
+
+    let exp = document.getElementById('card-expiry').value.replace(/\D/g, '');
+    if (exp.length >= 3) exp = exp.substring(0, 2) + '/' + exp.substring(2, 4);
+    document.getElementById('card-expiry').value = exp;
+    document.getElementById('preview-card-expiry').textContent = exp || 'MM/AA';
+
+    const cvv = document.getElementById('card-cvv').value;
+    document.getElementById('preview-card-cvv').textContent = cvv || '•••';
+  }
+
+  function flipCard(isBack) {
+    const cardEl = document.getElementById('credit-card-3d');
+    if (isBack) {
+      cardEl.classList.add('flipped');
+    } else {
+      cardEl.classList.remove('flipped');
+    }
+  }
+
+  function copyPixCode() {
+    const pixInput = document.getElementById('pix-code');
+    pixInput.select();
+    document.execCommand('copy');
+
+    const btnText = document.getElementById('copy-btn-text');
+    btnText.textContent = 'Copiado!';
+    setTimeout(() => {
+      btnText.textContent = 'Copiar';
+    }, 2500);
+  }
+
+  function startPixTimer() {
+    let totalSecs = 15 * 60;
+    const timerEl = document.getElementById('pix-timer');
+
+    setInterval(() => {
+      if (totalSecs <= 0) return;
+      totalSecs--;
+      const mins = String(Math.floor(totalSecs / 60)).padStart(2, '0');
+      const secs = String(totalSecs % 60).padStart(2, '0');
+      timerEl.textContent = `${mins}:${secs}`;
+    }, 1000);
+  }
+
+  function handleCheckoutSubmit(e) {
+    e.preventDefault();
+
+    if (bookingState.paymentMethod === 'card') {
+      const num = document.getElementById('card-number').value.replace(/\D/g, '');
+      const holder = document.getElementById('card-holder').value.trim();
+      const exp = document.getElementById('card-expiry').value.trim();
+      const cvv = document.getElementById('card-cvv').value.trim();
+
+      if (num.length < 13 || !holder || exp.length < 5 || cvv.length < 3) {
+        alert(`Por favor, preencha todos os dados do cartão de ${bookingState.cardType === 'credit' ? 'crédito' : 'débito'} corretamente.`);
+        return;
+      }
+    }
+
+    const randomCode = '#GLV-2026-' + Math.floor(1000 + Math.random() * 9000);
+    const model = scootersData[bookingState.scooter];
+
+    document.getElementById('voucher-code').textContent = randomCode;
+    document.getElementById('voucher-nome').textContent = document.getElementById('nome').value;
+    document.getElementById('voucher-cpf').textContent = 'CPF: ' + document.getElementById('cpf').value;
+    document.getElementById('voucher-email').textContent = document.getElementById('email').value;
+    document.getElementById('voucher-phone').textContent = 'WhatsApp: ' + document.getElementById('whatsapp').value;
+
+    document.getElementById('voucher-scooter-name').textContent = `${model.name} (${model.tag})`;
+    document.getElementById('voucher-scooter-cnh').textContent = model.cnhText;
+    document.getElementById('voucher-modalidade').textContent = `Modalidade: ${bookingState.modalidade === 'semanal' ? 'Semanal' : 'Mensal'}`;
+
+    const dateRet = new Date(document.getElementById('retirada').value);
+    const dateDev = new Date(document.getElementById('devolucao').value);
+    document.getElementById('voucher-retirada').innerHTML = `Retirada: <strong>${formatDateDisplay(dateRet)}</strong>`;
+    document.getElementById('voucher-devolucao').innerHTML = `Devolução: <strong>${formatDateDisplay(dateDev)}</strong>`;
+
+    document.getElementById('voucher-val-aluguel').textContent = 'Aluguel: ' + document.getElementById('summary-val-subtotal').textContent;
+    document.getElementById('voucher-val-caucao').textContent = 'Caução Reembolsável (50%): ' + document.getElementById('summary-val-caucao').textContent;
+    document.getElementById('voucher-val-total').textContent = 'Total Pago Online: ' + document.getElementById('summary-val-total').textContent;
+
+    const userEmail = document.getElementById('email').value.trim();
+    const userName = document.getElementById('nome').value.trim();
+    const totalPaid = document.getElementById('summary-val-total').textContent;
+    const emailSubject = encodeURIComponent(`Comprovante de Reserva Gloov Rent - ${randomCode}`);
+    const emailBody = encodeURIComponent(
+      `Olá ${userName},\n\n` +
+      `Sua reserva na Gloov Rent foi confirmada com sucesso!\n\n` +
+      `Código da Reserva: ${randomCode}\n` +
+      `Scooter: ${model.name} (${model.tag})\n` +
+      `Modalidade: ${bookingState.modalidade === 'semanal' ? 'Semanal' : 'Mensal'}\n` +
+      `Retirada: ${formatDateDisplay(dateRet)}\n` +
+      `Devolução: ${formatDateDisplay(dateDev)}\n` +
+      `Total Pago: ${totalPaid}\n\n` +
+      `Local de Retirada:\nGloov Rio Preto — Av. Dr. Antônio Tavares Pereira Lima, 188, São José do Rio Preto - SP\n\n` +
+      `Apresente este comprovante junto com seu documento oficial com foto.`
+    );
+
+    const reservaSalva = {
+      codigo: randomCode,
+      criadaEm: new Date().toISOString(),
+      status: 'Confirmada',
+      pagamento: bookingState.paymentMethod === 'pix' ? 'PIX' : (bookingState.cardType === 'credit' ? 'Cartão de Crédito' : 'Cartão de Débito'),
+      locatario: {
+        nome: userName,
+        cpf: document.getElementById('cpf').value,
+        email: userEmail,
+        whatsapp: document.getElementById('whatsapp').value
+      },
+      scooter: {
+        id: bookingState.scooter,
+        nome: model.name,
+        tag: model.tag,
+        cnh: model.cnhText
+      },
+      modalidade: bookingState.modalidade === 'semanal' ? 'Semanal' : 'Mensal',
+      retirada: formatDateDisplay(dateRet),
+      devolucao: formatDateDisplay(dateDev),
+      valores: {
+        aluguel: document.getElementById('summary-val-subtotal').textContent,
+        caucao: document.getElementById('summary-val-caucao').textContent,
+        total: totalPaid
+      }
+    };
+
+    salvarReservaNaSessao(reservaSalva);
+
+    const btnShareEmail = document.getElementById('btn-share-email');
+    btnShareEmail.href = `mailto:${userEmail}?subject=${emailSubject}&body=${emailBody}`;
+    btnShareEmail.onclick = (ev) => enviarEmailEIrParaConsulta(ev, btnShareEmail.href, randomCode);
+
+    const btnPrintPdf = document.querySelector('#modal-comprovante button[onclick*="window.print()"]');
+    if (btnPrintPdf) {
+      btnPrintPdf.setAttribute('onclick', `imprimirEIrParaConsulta('${randomCode}')`);
+    }
+
+    document.getElementById('modal-comprovante').classList.remove('hidden');
+  }
+
+  function closeVoucherModal() {
+    document.getElementById('modal-comprovante').classList.add('hidden');
+  }
+</script>
+
+</body>
+</html>

@@ -66,13 +66,12 @@
         <p class="auth-sub">Use o e-mail ou CPF cadastrado no Gloov Rent.</p>
       </header>
 
-      <!-- TODO: integrar com a API de autenticação -->
-      <form class="auth-form" id="form-login" action="#" method="post" novalidate>
+      <form class="auth-form" id="form-login" action="reserva.html" method="post" novalidate>
         <div class="field">
           <label for="usuario">E-mail ou CPF</label>
           <div class="control">
             <input type="text" id="usuario" name="usuario" autocomplete="username" inputmode="email" required
-              aria-describedby="erro-usuario">
+              value="cliente@gloovrent.com.br" aria-describedby="erro-usuario">
           </div>
           <p class="field-error" id="erro-usuario" hidden></p>
         </div>
@@ -80,12 +79,11 @@
         <div class="field">
           <div class="field-row">
             <label for="senha">Senha</label>
-            <!-- TODO: tela de recuperação de senha -->
             <a class="auth-link" href="recuperar-senha.html">Esqueci minha senha</a>
           </div>
           <div class="control control--senha">
             <input type="password" id="senha" name="senha" autocomplete="current-password" required minlength="6"
-              aria-describedby="erro-senha">
+              value="123456" aria-describedby="erro-senha">
             <button class="toggle-senha" type="button" aria-controls="senha" aria-pressed="false">
               <svg aria-hidden="true"><use href="#i-eye"/></svg>
               <span class="sr-only">Mostrar senha</span>
@@ -95,7 +93,7 @@
         </div>
 
         <label class="checkbox">
-          <input type="checkbox" name="lembrar" id="lembrar">
+          <input type="checkbox" name="lembrar" id="lembrar" checked>
           <span class="checkbox-box" aria-hidden="true"><svg><use href="#i-check"/></svg></span>
           Manter conectado
         </label>

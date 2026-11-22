@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="pt-BR" class="h-full scroll-smooth">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gloov Rent — Minhas Reservas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,800;1,900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gloov: {
+              dark: '#171F0D',
+              olive: '#232E14',
+              surface: '#2C3A19',
+              lime: '#B8F22C',
+              limeHover: '#A3D923',
+              red: '#E63946',
+              borderDark: '#384724'
+            }
+          },
+          fontFamily: {
+            condensed: ['"Barlow Condensed"', 'sans-serif'],
+            sans: ['Barlow', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Barlow', sans-serif; background-color: #171F0D; color: #F7F8F5; }
+    .font-condensed { font-family: 'Barlow Condensed', sans-serif; }
+    .glass-card { background: rgba(35, 46, 20, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(184, 242, 44, 0.15); }
+    @media print { .no-print { display: none !important; } body { background: #fff !important; color: #111 !important; } }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+<header class="bg-gloov-dark/95 border-b border-gloov-borderDark sticky top-0 z-40 no-print">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between gap-4">
+    <a href="index.html" class="font-condensed text-3xl font-black italic tracking-wider text-gloov-lime">
+      GLOOV <span class="text-white font-normal">RENT</span>
+    </a>
+
+    <div class="flex items-center gap-3">
+      <a href="reserva.html" class="px-3.5 py-2 rounded-xl bg-gloov-olive hover:bg-gloov-surface border border-gloov-borderDark text-xs font-bold text-white transition-colors">
+        Nova Reserva
+      </a>
+      <div id="user-session-badge" class="hidden items-center gap-3 bg-gloov-olive/90 border border-gloov-lime/30 px-3 py-1.5 rounded-xl text-xs">
+        <span class="text-gray-300">Olá, <strong id="header-user-name" class="text-gloov-lime">Cliente</strong></span>
+        <button type="button" onclick="logoutUsuario()" class="text-gray-400 hover:text-gloov-red underline font-semibold">Sair</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-10 space-y-8">
+  <div id="aviso-acao" class="hidden rounded-xl border border-gloov-lime/40 bg-gloov-lime/10 p-4 text-sm text-gloov-lime"></div>
+
+  <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-gloov-borderDark pb-5">
+    <div>
+      <p class="text-xs font-bold uppercase tracking-widest text-gloov-lime">Área do Locatário</p>
+      <h1 class="font-condensed text-4xl font-black italic uppercase text-white">Minhas Reservas</h1>
+    </div>
+
+    <div class="w-full sm:w-72 no-print">
+      <label for="filtro-codigo" class="block text-xs text-gray-400 mb-1">Buscar por código (#GLV-...)</label>
+      <input id="filtro-codigo" type="text" oninput="renderizarReservas()" placeholder="Ex: 8492 ou GLV-2026" class="w-full bg-gloov-olive border border-gloov-borderDark rounded-xl px-3.5 py-2 text-sm text-white focus:ring-2 focus:ring-gloov-lime focus:outline-none">
+    </div>
+  </div>
+
+  <div id="lista-reservas" class="space-y-4"></div>
+</main>
+
+<script>
+  function obterSessaoSalva() {
+    const chaves = ['gloov_sessao_teste', 'gloov_usuario_logado'];
+    const storages = [localStorage, sessionStorage];
+    for (const chave of chaves) {
+      for (const store of storages) {
+        const bruto = store.getItem(chave);
+        if (bruto) {
+          try {
+            return { raw: JSON.parse(bruto), origem: store === localStorage ? 'localStorage' : 'sessionStorage' };
+          } catch (e) {}
+        }
+      }
+    }
+    return null;
+  }
+
+  function logoutUsuario() {
+    ['gloov_sessao_teste', 'gloov_usuario_logado'].forEach((chave) => {
+      localStorage.removeItem(chave);
+      sessionStorage.removeItem(chave);
+    });
+    window.location.href = 'login.html';
+  }
+
+  function obterReservas() {
+    const raw = localStorage.getItem('gloov_reservas_usuario') || sessionStorage.getItem('gloov_reservas_usuario');
+    if (!raw) return [];
+    try {
+      return JSON.parse(raw);
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function renderizarReservas() {
+    const container = document.getElementById('lista-reservas');
+    const filtro = (document.getElementById('filtro-codigo').value || '').trim().toLowerCase();
+    const sessao = obterSessaoSalva();
+    const perfil = sessao ? (sessao.raw.perfil || sessao.raw) : null;
+
+    let reservas = obterReservas();
+    if (perfil && perfil.email) {
+      const filtradasPorUsuario = reservas.filter((r) => r.locatario && r.locatario.email === perfil.email);
+      if (filtradasPorUsuario.length > 0) reservas = filtradasPorUsuario;
+    }
+
+    if (filtro) {
+      reservas = reservas.filter((r) => (r.codigo || '').toLowerCase().includes(filtro) || (r.scooter?.nome || '').toLowerCase().includes(filtro));
+    }
+
+    if (!reservas.length) {
+      container.innerHTML = `
+        <div class="glass-card rounded-2xl p-8 text-center space-y-3">
+          <p class="text-gray-300 font-semibold">Nenhuma reserva encontrada para consulta.</p>
+          <a href="reserva.html" class="inline-block px-5 py-2.5 rounded-xl bg-gloov-lime text-gloov-dark font-bold text-xs uppercase">Fazer uma reserva</a>
+        </div>`;
+      return;
+    }
+
+    container.innerHTML = reservas.map((r) => `
+      <article class="glass-card rounded-2xl p-6 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gloov-borderDark pb-3">
+          <div>
+            <span class="text-xs uppercase font-bold text-gloov-lime">Código da Reserva</span>
+            <h2 class="font-mono text-xl font-black text-white">${r.codigo}</h2>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-950 text-emerald-400 border border-emerald-700/50">${r.status || 'Confirmada'}</span>
+            <button type="button" onclick="window.print()" class="no-print px-3 py-1.5 rounded-xl bg-gloov-dark hover:bg-gloov-surface border border-gloov-borderDark text-xs font-bold text-white">Imprimir / PDF</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs text-gray-300">
+          <div>
+            <p class="text-gray-400">Scooter & Plano</p>
+            <p class="font-bold text-white text-sm mt-0.5">${r.scooter?.nome || ''} (${r.scooter?.tag || ''}) · ${r.modalidade || ''}</p>
+            <p class="text-emerald-400 mt-0.5">${r.scooter?.cnh || ''}</p>
+          </div>
+          <div>
+            <p class="text-gray-400">Retirada e Devolução</p>
+            <p class="text-white mt-0.5">Retirada: <strong>${r.retirada}</strong></p>
+            <p class="text-white">Devolução: <strong>${r.devolucao}</strong></p>
+          </div>
+          <div>
+            <p class="text-gray-400">Pagamento (${r.pagamento || 'Online'})</p>
+            <p class="text-white mt-0.5">Aluguel: ${r.valores?.aluguel || '—'}</p>
+            <p class="text-white">Caução (50%): ${r.valores?.caucao || '—'}</p>
+            <p class="font-bold text-gloov-lime text-sm mt-0.5">Total: ${r.valores?.total || '—'}</p>
+          </div>
+        </div>
+      </article>
+    `).join('');
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const sessao = obterSessaoSalva();
+    const perfil = sessao ? (sessao.raw.perfil || sessao.raw) : null;
+
+    if (perfil && perfil.nome) {
+      document.getElementById('header-user-name').textContent = perfil.nome.split(' ')[0];
+      const badge = document.getElementById('user-session-badge');
+      badge.classList.remove('hidden');
+      badge.classList.add('flex');
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const cod = params.get('reserva');
+    const acao = params.get('acao');
+    const aviso = document.getElementById('aviso-acao');
+
+    if (cod) {
+      document.getElementById('filtro-codigo').value = cod;
+    }
+    if (acao === 'email') {
+      aviso.textContent = `Comprovante preparado para envio por e-mail (${cod ? '#' + cod : 'reserva'}). Sua sessão continua ativa para consulta abaixo.`;
+      aviso.classList.remove('hidden');
+    } else if (acao === 'pdf') {
+      aviso.textContent = `Impressão/PDF iniciada para a reserva ${cod ? '#' + cod : ''}. Sua sessão continua ativa para consulta abaixo.`;
+      aviso.classList.remove('hidden');
+    }
+
+    renderizarReservas();
+  });
+</script>
+</body>
+</html>

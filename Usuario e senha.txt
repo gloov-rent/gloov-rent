@@ -1,0 +1,8 @@
+E-mail cliente.teste@gloovrent.com.br
+CPF 123.456.789-00 
+Senha Gloov@2026 
+nome: 'Lucas Henrique Mendes',
+nascimento: '1996-08-15',
+whatsapp: '(17) 99123-4567',
+cnhNumero: '04829173650',
+cnhValidade: '2029-10-20'

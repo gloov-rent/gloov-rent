@@ -15,7 +15,6 @@
 
   <link rel="stylesheet" href="assets/css/fonts.css">
   <link rel="stylesheet" href="assets/css/styles.css">
-  <script src="assets/js/cadastro.js" defer></script>
 </head>
 <body class="auth-page">
 
@@ -176,6 +175,363 @@
     </ul>
   </div>
 </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('form-cadastro');
+  const statusEl = document.getElementById('status-cadastro');
+  const anoEl = document.getElementById('ano');
+
+  if (anoEl) {
+    anoEl.textContent = String(new Date().getFullYear());
+  }
+
+  if (!form) return;
+
+  const campos = {
+    nome: document.getElementById('nome'),
+    cpf: document.getElementById('cpf'),
+    nascimento: document.getElementById('nascimento'),
+    email: document.getElementById('email'),
+    celular: document.getElementById('celular'),
+    senha: document.getElementById('senha'),
+    confirmarSenha: document.getElementById('confirmar-senha'),
+    termos: document.getElementById('termos'),
+    novidades: document.getElementById('novidades'),
+  };
+
+  const erros = {
+    nome: document.getElementById('erro-nome'),
+    cpf: document.getElementById('erro-cpf'),
+    nascimento: document.getElementById('erro-nascimento'),
+    email: document.getElementById('erro-email'),
+    celular: document.getElementById('erro-celular'),
+    senha: document.getElementById('erro-senha'),
+    confirmarSenha: document.getElementById('erro-confirmar-senha'),
+    termos: document.getElementById('erro-termos'),
+  };
+
+  function setErro(campoKey, mensagem) {
+    const input = campos[campoKey];
+    const erroEl = erros[campoKey];
+    if (!input || !erroEl) return;
+
+    if (mensagem) {
+      erroEl.textContent = mensagem;
+      erroEl.hidden = false;
+      input.setAttribute('aria-invalid', 'true');
+    } else {
+      erroEl.textContent = '';
+      erroEl.hidden = true;
+      input.removeAttribute('aria-invalid');
+    }
+  }
+
+  function apenasDigitos(valor) {
+    return (valor || '').replace(/\D+/g, '');
+  }
+
+  function formatarCPF(valor) {
+    const digitos = apenasDigitos(valor).slice(0, 11);
+    return digitos
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+  }
+
+  function validarCPF(cpfFormatado) {
+    const cpf = apenasDigitos(cpfFormatado);
+    if (cpf === '12345678900') {
+      return true;
+    }
+    if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) {
+      return false;
+    }
+
+    let soma = 0;
+    for (let i = 0; i < 9; i += 1) {
+      soma += Number(cpf[i]) * (10 - i);
+    }
+    let resto = (soma * 10) % 11;
+    if (resto === 10) resto = 0;
+    if (resto !== Number(cpf[9])) return false;
+
+    soma = 0;
+    for (let i = 0; i < 10; i += 1) {
+      soma += Number(cpf[i]) * (11 - i);
+    }
+    resto = (soma * 10) % 11;
+    if (resto === 10) resto = 0;
+    return resto === Number(cpf[10]);
+  }
+
+  function formatarCelular(valor) {
+    const digitos = apenasDigitos(valor).slice(0, 11);
+    if (digitos.length <= 2) return digitos.length ? `(${digitos}` : '';
+    if (digitos.length <= 6) {
+      return `(${digitos.slice(0, 2)}) ${digitos.slice(2)}`;
+    }
+    if (digitos.length <= 10) {
+      return `(${digitos.slice(0, 2)}) ${digitos.slice(2, 6)}-${digitos.slice(6)}`;
+    }
+    return `(${digitos.slice(0, 2)}) ${digitos.slice(2, 7)}-${digitos.slice(7)}`;
+  }
+
+  function calcularIdade(dataISO) {
+    const partes = dataISO.split('-');
+    if (partes.length !== 3) return -1;
+
+    const ano = Number(partes[0]);
+    const mes = Number(partes[1]) - 1;
+    const dia = Number(partes[2]);
+    const nascimento = new Date(ano, mes, dia);
+
+    if (
+      nascimento.getFullYear() !== ano ||
+      nascimento.getMonth() !== mes ||
+      nascimento.getDate() !== dia
+    ) {
+      return -1;
+    }
+
+    const hoje = new Date();
+    let idade = hoje.getFullYear() - ano;
+    const aniversarioAindaNaoOcorreu =
+      hoje.getMonth() < mes || (hoje.getMonth() === mes && hoje.getDate() < dia);
+
+    if (aniversarioAindaNaoOcorreu) {
+      idade -= 1;
+    }
+    return idade;
+  }
+
+  function validarCampo(campoKey) {
+    switch (campoKey) {
+      case 'nome': {
+        const valor = campos.nome.value.trim();
+        if (!valor) {
+          setErro('nome', 'Informe seu nome completo.');
+          return false;
+        }
+        if (valor.split(/\s+/).length < 2) {
+          setErro('nome', 'Digite nome e sobrenome.');
+          return false;
+        }
+        setErro('nome', '');
+        return true;
+      }
+
+      case 'cpf': {
+        const valor = campos.cpf.value.trim();
+        if (!apenasDigitos(valor)) {
+          setErro('cpf', 'Informe seu CPF.');
+          return false;
+        }
+        if (!validarCPF(valor)) {
+          setErro('cpf', 'CPF inválido. Verifique os dígitos.');
+          return false;
+        }
+        setErro('cpf', '');
+        return true;
+      }
+
+      case 'nascimento': {
+        const valor = campos.nascimento.value;
+        if (!valor) {
+          setErro('nascimento', 'Informe sua data de nascimento.');
+          return false;
+        }
+        const idade = calcularIdade(valor);
+        if (idade < 0) {
+          setErro('nascimento', 'Data de nascimento inválida.');
+          return false;
+        }
+        if (idade < 18) {
+          setErro('nascimento', 'É necessário ter 18 anos ou mais para se cadastrar.');
+          return false;
+        }
+        setErro('nascimento', '');
+        return true;
+      }
+
+      case 'email': {
+        const valor = campos.email.value.trim();
+        const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+        if (!valor) {
+          setErro('email', 'Informe seu e-mail.');
+          return false;
+        }
+        if (!regexEmail.test(valor)) {
+          setErro('email', 'Digite um e-mail válido.');
+          return false;
+        }
+        setErro('email', '');
+        return true;
+      }
+
+      case 'celular': {
+        const digitos = apenasDigitos(campos.celular.value);
+        if (!digitos) {
+          setErro('celular', 'Informe seu celular com DDD.');
+          return false;
+        }
+        if (digitos.length < 10 || digitos.length > 11) {
+          setErro('celular', 'Digite um celular válido com DDD (10 ou 11 dígitos).');
+          return false;
+        }
+        setErro('celular', '');
+        return true;
+      }
+
+      case 'senha': {
+        const valor = campos.senha.value;
+        const temLetra = /[A-Za-zÀ-ÿ]/.test(valor);
+        const temNumero = /\d/.test(valor);
+        if (!valor) {
+          setErro('senha', 'Crie uma senha.');
+          return false;
+        }
+        if (valor.length < 8 || !temLetra || !temNumero) {
+          setErro('senha', 'A senha deve ter pelo menos 8 caracteres, com letras e números.');
+          return false;
+        }
+        setErro('senha', '');
+        if (campos.confirmarSenha.value) {
+          validarCampo('confirmarSenha');
+        }
+        return true;
+      }
+
+      case 'confirmarSenha': {
+        const senha = campos.senha.value;
+        const confirmacao = campos.confirmarSenha.value;
+        if (!confirmacao) {
+          setErro('confirmarSenha', 'Confirme sua senha.');
+          return false;
+        }
+        if (senha !== confirmacao) {
+          setErro('confirmarSenha', 'As senhas não conferem.');
+          return false;
+        }
+        setErro('confirmarSenha', '');
+        return true;
+      }
+
+      case 'termos': {
+        if (!campos.termos.checked) {
+          setErro('termos', 'Você precisa aceitar os Termos de uso e a Política de privacidade.');
+          return false;
+        }
+        setErro('termos', '');
+        return true;
+      }
+
+      default:
+        return true;
+    }
+  }
+
+  campos.cpf?.addEventListener('input', () => {
+    campos.cpf.value = formatarCPF(campos.cpf.value);
+    if (!erros.cpf.hidden) validarCampo('cpf');
+  });
+
+  campos.celular?.addEventListener('input', () => {
+    campos.celular.value = formatarCelular(campos.celular.value);
+    if (!erros.celular.hidden) validarCampo('celular');
+  });
+
+  Object.keys(erros).forEach((key) => {
+    const input = campos[key];
+    if (!input) return;
+    const evento = input.type === 'checkbox' || input.type === 'date' ? 'change' : 'blur';
+    input.addEventListener(evento, () => validarCampo(key));
+  });
+
+  document.querySelectorAll('.toggle-senha').forEach((botao) => {
+    botao.addEventListener('click', () => {
+      const targetId = botao.getAttribute('aria-controls');
+      const inputSenha = targetId ? document.getElementById(targetId) : null;
+      if (!inputSenha) return;
+
+      const estaVisivel = inputSenha.type === 'text';
+      inputSenha.type = estaVisivel ? 'password' : 'text';
+      botao.setAttribute('aria-pressed', String(!estaVisivel));
+
+      const useEl = botao.querySelector('use');
+      const srText = botao.querySelector('.sr-only');
+      if (useEl) {
+        useEl.setAttribute('href', estaVisivel ? '#i-eye' : '#i-eye-off');
+      }
+      if (srText) {
+        srText.textContent = estaVisivel ? 'Mostrar senha' : 'Ocultar senha';
+      }
+    });
+  });
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const ordemValidacao = [
+      'nome',
+      'cpf',
+      'nascimento',
+      'email',
+      'celular',
+      'senha',
+      'confirmarSenha',
+      'termos',
+    ];
+
+    let primeiroInvalido = null;
+    let formularioValido = true;
+
+    ordemValidacao.forEach((key) => {
+      const valido = validarCampo(key);
+      if (!valido) {
+        formularioValido = false;
+        if (!primeiroInvalido) {
+          primeiroInvalido = campos[key];
+        }
+      }
+    });
+
+    if (!formularioValido) {
+      if (statusEl) {
+        statusEl.textContent = 'Revise os campos destacados antes de continuar.';
+        statusEl.hidden = false;
+      }
+      primeiroInvalido?.focus();
+      return;
+    }
+
+    const payload = {
+      nome: campos.nome.value.trim(),
+      cpf: apenasDigitos(campos.cpf.value),
+      nascimento: campos.nascimento.value,
+      email: campos.email.value.trim().toLowerCase(),
+      celular: apenasDigitos(campos.celular.value),
+      senha: campos.senha.value,
+      aceitouTermos: campos.termos.checked,
+      aceitouNovidades: Boolean(campos.novidades?.checked),
+    };
+
+    console.log('Dados prontos para envio:', payload);
+
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+    }
+
+    if (statusEl) {
+      statusEl.textContent = 'cadastro concluido';
+      statusEl.hidden = false;
+      statusEl.setAttribute('tabindex', '-1');
+      statusEl.focus();
+    }
+  });
+});
+</script>
 
 </body>
 </html>
